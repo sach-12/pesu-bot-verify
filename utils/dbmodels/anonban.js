@@ -1,6 +1,6 @@
 // Schema for anonban collection on MongoDB
-import pkg from "mongoose";
-const  { Schema, model } = pkg;
+
+import { Schema, model } from "mongoose";
 
 const AnonBanSchema = new Schema(
     {

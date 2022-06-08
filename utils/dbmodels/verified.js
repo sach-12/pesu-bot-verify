@@ -1,7 +1,6 @@
 // Schema for verified collection on MongoDB
 
-import pkg from "mongoose";
-const  { Schema, model } = pkg;
+import { Schema, model } from "mongoose";
 
 const VerifiedSchema = new Schema(
     {

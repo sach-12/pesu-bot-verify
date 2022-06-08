@@ -1,3 +1,7 @@
+body {
+    font-family: "mono";
+    background-color: rgb(21, 23, 42);
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -3,8 +3,7 @@
 // Note: Future updates will remove multiple batch details collections and instead use a single collection.
 // A secondary index on PRN will be made for faster retrieval.
 
-import pkg from "mongoose";
-const  { Schema, model } = pkg;
+import { Schema, model } from "mongoose";
 
 const BatchSchema = new Schema(
     {

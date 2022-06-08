@@ -1,17 +1,22 @@
-import mongoose from "mongoose";
+// The below three imports are unused but they create the models on importing
+import anonban from "./dbmodels/anonban";
+import batchDetails from "./dbmodels/batchDetails";
+import verified from "./dbmodels/verified";
 
-let connection = null;
+import { connect, connection } from "mongoose";
+
+let connectionEstablished = null;
 
 // Singleton method to get database connection
-const connect = (() => {
-    if(connection === null) {
-        mongoose.connect(process.env.MONGO_URI, {
+const connectToDb = async() => {
+    if(connectionEstablished === null) {
+        await connect(process.env.MONGO_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true
         });
-        connection = mongoose.connection;
+        connectionEstablished = connection;
     }
     return connection;
-});
+};
 
-export default connect;
+export default connectToDb;
