@@ -1,6 +1,6 @@
 // Schema for verified collection on MongoDB
 
-import { Schema, model } from "mongoose";
+import { Schema, model, connection } from "mongoose";
 
 const VerifiedSchema = new Schema(
     {
@@ -10,6 +10,9 @@ const VerifiedSchema = new Schema(
     }
 );
 
-const verified = model('verified', VerifiedSchema, 'verified');
+let verified = connection.models.verified;
+if(!verified) {
+    verified = model("verified", VerifiedSchema, "verified");
+}
 
 export default verified;

@@ -3,7 +3,7 @@
 // Note: Future updates will remove multiple batch details collections and instead use a single collection.
 // A secondary index on PRN will be made for faster retrieval.
 
-import { Schema, model } from "mongoose";
+import { Schema, model, connection } from "mongoose";
 
 const BatchSchema = new Schema(
     {
@@ -18,10 +18,32 @@ const BatchSchema = new Schema(
     }
 )
 
-const batch_2018 = model('batch_2018', BatchSchema, 'batch_2018');
-const batch_2019 = model('batch_2019', BatchSchema, 'batch_2019');
-const batch_2020 = model('batch_2020', BatchSchema, 'batch_2020');
-const batch_2021 = model('batch_2021', BatchSchema, 'batch_2021');
+let batch_2018 = connection.models.batch_2018;
+if(!batch_2018) {
+    batch_2018 = model("batch_2018", BatchSchema, "batch_2018");
+}
+
+let batch_2019 = connection.models.batch_2019;
+if(!batch_2019) {
+    batch_2019 = model("batch_2019", BatchSchema, "batch_2019");
+}
+
+let batch_2020 = connection.models.batch_2020;
+if(!batch_2020) {
+    batch_2020 = model("batch_2020", BatchSchema, "batch_2020");
+}
+
+let batch_2021 = connection.models.batch_2021;
+if(!batch_2021) {
+    batch_2021 = model("batch_2021", BatchSchema, "batch_2021");
+}
+
+// Future code:
+
+// let batch = connection.models.batch;
+// if(!batch) {
+//     batch = model("batch", BatchSchema, "batch");
+// }
 
 export default {
     batch_2018,

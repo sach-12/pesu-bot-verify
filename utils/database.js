@@ -16,7 +16,7 @@ const connectToDb = async() => {
         });
         connectionEstablished = connection;
     }
-    return connection;
+    return connectionEstablished;
 };
 
 export default connectToDb;

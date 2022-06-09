@@ -1,6 +1,6 @@
 // Schema for anonban collection on MongoDB
 
-import { Schema, model } from "mongoose";
+import { Schema, model, connection } from "mongoose";
 
 const AnonBanSchema = new Schema(
     {
@@ -9,6 +9,9 @@ const AnonBanSchema = new Schema(
     }
 );
 
-const anonban = model('anonban', AnonBanSchema, 'anonban');
+let anonban = connection.models.anonban;
+if(!anonban) {
+    anonban = model("anonban", AnonBanSchema, "anonban");
+}
 
 export default anonban;
