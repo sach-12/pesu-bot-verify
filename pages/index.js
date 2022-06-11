@@ -27,7 +27,6 @@ export default function Home() {
     const [succesful, setSuccessful] = useState(false) // Proceed to successful page on successful validation
     const [successSection, setSuccessSection] = useState('') // Server-provided section
     const [successBranch, setSuccessBranch] = useState('') // Server-provided branch
-    const [successCycle, setSuccessCycle] = useState('') // Server-provided cycle
 
     useEffect(() => {
         // Backend initialization
@@ -56,8 +55,7 @@ export default function Home() {
                         }
                     })
                     .catch(err => {
-                        console.log(err.response)
-                        if(err.response.status === 401 || err.response.status === 403 || err.response.status === 405) {
+                        if(err.response.status.toString().charAt(0) === '4') {
                             setInit(`Error: ${err.response.data.message}`)
                         }
                         else {
@@ -66,8 +64,7 @@ export default function Home() {
                     })
                 })
                 .catch(err => {
-                    console.log(err.response)
-                    if(err.response.status === 401 || err.response.status === 405) {
+                    if(err.response.status.toString().charAt(0) === '4') {
                         setInit(`Error: ${err.response.data.message}`)
                     }
                     else {
@@ -80,8 +77,7 @@ export default function Home() {
             }
         })
         .catch(err => {
-            console.log(err.response)
-            if(err.response.status === 405) {
+            if(err.response.status.toString().charAt(0) === '4') {
                 setInit('Error: Method not allowed')
             }
             else{
@@ -92,7 +88,6 @@ export default function Home() {
 
     // Function to handle PRN submit event
     const handlePRNSubmit = () => {
-        console.log(prn)
         if(!prn) {
             setPrnError('PRN cannot be empty')
         }
@@ -109,7 +104,6 @@ export default function Home() {
                     prn: prn.toUpperCase()
                 })
                 .then(res => {
-                    console.log(res)
                     setPrnError(null)
                     // PES1201"8"00000: The 7th index decides the year
                     if(prn.charAt(7) === '8') {
@@ -124,20 +118,20 @@ export default function Home() {
                     }
                 })
                 .catch(err => {
-                    if(err.response.status === 400 || err.response.status === 401 || err.response.status === 404 || err.response.status === 405) {
+                    if(err.response.status.toString().charAt(0) === '4') {
                         setPrnError(`Error: ${err.response.data.message}`)
                     }
                     else {
-                        setPrnError('Error: Server error')
+                        setPrnError('Error: Internal Server Error')
                     }
                 })
             })
             .catch(err => {
-                if(err.response.status === 400 || err.response.status === 401 || err.response.status === 403 || err.response.status === 405) {
+                if(err.response.status.toString().charAt(0) === '4') {
                     setPrnError(`Error: ${err.response.data.message}`)
                 }
                 else {
-                    setPrnError('Error: Server error')
+                    setPrnError('Error: Internal Server Error')
                 }
             })
         }
@@ -153,7 +147,6 @@ export default function Home() {
 
     // Function to handle SRN submit event
     const handleSRNSubmit = () => {
-        console.log(srn)
         if(!srn) {
             setSrnError('SRN cannot be empty')
         }
@@ -167,19 +160,17 @@ export default function Home() {
                     srn: srn.toUpperCase()
                 })
                 .then(res => {
-                    console.log(res)
                     setSrnError(res.data.message)
                     setSuccessSection(res.data.section)
                     setSuccessBranch(res.data.branch)
-                    setSuccessCycle(res.data.cycle)
                     setSuccessful(true)
                 })
                 .catch(err => {
-                    if(err.response.status === 400 || err.response.status === 401 || err.response.status === 404 || err.response.status === 405) {
+                    if(err.response.status.toString().charAt(0) === '4') {
                         setSrnError(`Error: ${err.response.data.message}`)
                     }
                     else {
-                        setSrnError('Error: Server error')
+                        setSrnError('Error: Internal Server Error')
                     }
                 })
             }
@@ -191,7 +182,6 @@ export default function Home() {
 
     // Function to handle SRN edit button click event
     const handleSectionSubmit = () => {
-        console.log(section)
         if(!section) {
             setSectionError('Section cannot be empty')
         }
@@ -205,18 +195,16 @@ export default function Home() {
                     section: section.toUpperCase()
                 })
                 .then(res => {
-                    console.log(res)
                     setSuccessSection(res.data.section)
                     setSuccessBranch(res.data.branch)
-                    setSuccessCycle(res.data.cycle)
                     setSuccessful(true)
                 })
                 .catch(err => {
-                    if(err.response.status === 400 || err.response.status === 401 || err.response.status === 404 || err.response.status === 405) {
+                    if(err.response.status.toString().charAt(0) === '4') {
                         setSectionError(`Error: ${err.response.data.message}`)
                     }
                     else {
-                        setSectionError('Error: Server error')
+                        setSectionError('Error: Internal Server Error')
                     }
                 })
             }
@@ -335,7 +323,6 @@ export default function Home() {
                             <div className="details my-4 bg-green-800 bg-opacity-30 max-w-xs mx-auto p-2 rounded-sm">
                                 <p className='text-gray-700 text-md tracking-tighter'>Section: {successSection}</p>
                                 <p className='text-gray-700 text-md tracking-tighter'>Branch: {successBranch}</p>
-                                <p className='text-gray-700 text-md tracking-tighter'>Cycle: {successCycle}</p>
                             </div>
                             <div className="redirect my-6">
                                 <Link href={"https://discord.com/channels/742797665301168220/860224115633160203"}>

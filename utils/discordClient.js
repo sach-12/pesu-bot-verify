@@ -6,6 +6,7 @@ const botIntents = new Intents();
 botIntents.add(
     Intents.FLAGS.GUILDS,
     Intents.FLAGS.GUILD_MEMBERS,
+    Intents.FLAGS.GUILD_MESSAGES,
 );
 
 let client = null;

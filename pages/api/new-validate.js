@@ -2,6 +2,7 @@ import alreadyValidated from "../../utils/alreadyValidated";
 import { getUserClientId } from "../../utils/discordMember";
 import getBatchDetails from "../../utils/batchDetails";
 import roleAlreadyExists from "../../utils/roleAlreadyExists";
+import newValidate from "../../utils/newValidate";
 
 const handler = async (req, res) => {
     // Reject any request that is not a POST
@@ -19,6 +20,7 @@ const handler = async (req, res) => {
             return;
         }
 
+        // Discord Auth
         const userClientId = await getUserClientId(userToken);
         if (!userClientId) {
             res.status(401).json({
@@ -27,6 +29,7 @@ const handler = async (req, res) => {
             return;
         }
 
+        // Check if user has already validated role
         const roleExists = await roleAlreadyExists(userClientId);
         if (roleExists) {
             res.status(403).json({
@@ -35,6 +38,7 @@ const handler = async (req, res) => {
             return;
         }
 
+        // Check if user's PRN is already validated
         const avBool = await alreadyValidated(prn);
         if (avBool) {
             res.status(403).json({
@@ -43,6 +47,7 @@ const handler = async (req, res) => {
             return;
         }
 
+        // Check if PRN exists
         const batchDetails = await getBatchDetails(prn);
         if (!batchDetails) {
             res.status(404).json({
@@ -53,13 +58,22 @@ const handler = async (req, res) => {
         else {
             if (prn.toString().toUpperCase().charAt(7) === "8") {
                 if (batchDetails.Section.charAt(batchDetails.Section.length - 1) === section.toUpperCase()) {
-                    res.status(200).json({
-                        message: "OK",
-                        section: batchDetails.Section,
-                        branch: batchDetails.Branch,
-                        cycle: batchDetails.Cycle,
-                    });
-                    return;
+                    // All functions needed to validate user like role adding, database entry, etc.
+                    const response = await newValidate(userClientId, prn);
+                    if (response) {
+                        res.status(200).json({
+                            message: "OK",
+                            section: batchDetails.Section,
+                            branch: batchDetails.Branch,
+                        });
+                        return;
+                    }
+                    else {
+                        res.status(500).json({
+                            message: "Internal server error",
+                        });
+                        return;
+                    }
                 }
                 else {
                     res.status(403).json({
@@ -70,13 +84,21 @@ const handler = async (req, res) => {
             }
             else {
                 if (batchDetails.SRN === srn.toUpperCase()) {
-                    res.status(200).json({
-                        message: "OK",
-                        section: batchDetails.Section,
-                        branch: batchDetails.Branch,
-                        cycle: batchDetails.Cycle,
-                    });
-                    return;
+                    const response = await newValidate(userClientId, prn);
+                    if (response) {
+                        res.status(200).json({
+                            message: "OK",
+                            section: batchDetails.Section,
+                            branch: batchDetails.Branch,
+                        });
+                        return;
+                    }
+                    else {
+                        res.status(500).json({
+                            message: "Internal server error",
+                        });
+                        return;
+                    }
                 }
                 else {
                     res.status(403).json({
