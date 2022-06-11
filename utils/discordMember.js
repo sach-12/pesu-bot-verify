@@ -28,7 +28,7 @@ const getUserAccessToken = async (code) => {
         return tokenResponse.data.access_token;
     }
     catch (error) {
-        console.log(error)
+        // console.log(error)
         return null;
     }
 };
