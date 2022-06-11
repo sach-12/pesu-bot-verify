@@ -214,6 +214,10 @@ export default function Home() {
         }
     }
 
+    const handleReport = (source) => {
+        alert('This function is still under development. For now, DM Han about it.')
+    }
+
 
     return (
         <div>
@@ -262,7 +266,7 @@ export default function Home() {
                                         <p className='text-red-600 text-xl font-bold'>{prnError}</p>
                                         <div className="report mt-4">
                                             <p className='text-gray-900 text-xl tracking-tighter'>If you think this is an error, please click this button and we will get back to you soon.</p>
-                                            <button type="submit" value="Submit" onClick={(e) => {}} className='p-3 border-4 border-pesu-gray bg-opacity-40 bg-slate-200 border-opacity-50 max-w-sm mx-auto w-48 shadow-lg rounded-md font-bold tracking-wide text-xl hover:bg-pesu-dark-gray hover:bg-opacity-50 transition duration-500 ease-in-out'>
+                                            <button type="submit" value="Submit" onClick={(e) => {handleReport('prn')}} className='p-3 border-4 border-pesu-gray bg-opacity-40 bg-slate-200 border-opacity-50 max-w-sm mx-auto w-48 shadow-lg rounded-md font-bold tracking-wide text-xl hover:bg-pesu-dark-gray hover:bg-opacity-50 transition duration-500 ease-in-out'>
                                                 Report error
                                             </button>
                                         </div>
@@ -282,7 +286,7 @@ export default function Home() {
                                                 <p className='text-red-600 text-xl font-bold'>{srnError}</p>
                                                 <div className="report mt-4">
                                                     <p className='text-gray-900 text-xl tracking-tighter'>If you think this is an error, please click this button and we will get back to you soon.</p>
-                                                    <button type="submit" value="Submit" onClick={(e) => {}} className='p-3 border-4 border-pesu-gray bg-opacity-40 bg-slate-200 border-opacity-50 max-w-sm mx-auto w-48 shadow-lg rounded-md font-bold tracking-wide text-xl hover:bg-pesu-dark-gray hover:bg-opacity-50 transition duration-500 ease-in-out'>
+                                                    <button type="submit" value="Submit" onClick={(e) => {handleReport('srn')}} className='p-3 border-4 border-pesu-gray bg-opacity-40 bg-slate-200 border-opacity-50 max-w-sm mx-auto w-48 shadow-lg rounded-md font-bold tracking-wide text-xl hover:bg-pesu-dark-gray hover:bg-opacity-50 transition duration-500 ease-in-out'>
                                                         Report error
                                                     </button>
                                                 </div>
@@ -304,7 +308,7 @@ export default function Home() {
                                                 <p className='text-red-600 text-xl font-bold'>{sectionError}</p>
                                                 <div className="report mt-4">
                                                     <p className='text-gray-900 text-xl tracking-tighter'>If you think this is an error, please click this button and we will get back to you soon.</p>
-                                                    <button type="submit" value="Submit" onClick={(e) => {}} className='p-3 border-4 border-pesu-gray bg-opacity-40 bg-slate-200 border-opacity-50 max-w-sm mx-auto w-48 shadow-lg rounded-md font-bold tracking-wide text-xl hover:bg-pesu-dark-gray hover:bg-opacity-50 transition duration-500 ease-in-out'>
+                                                    <button type="submit" value="Submit" onClick={(e) => {handleReport('section')}} className='p-3 border-4 border-pesu-gray bg-opacity-40 bg-slate-200 border-opacity-50 max-w-sm mx-auto w-48 shadow-lg rounded-md font-bold tracking-wide text-xl hover:bg-pesu-dark-gray hover:bg-opacity-50 transition duration-500 ease-in-out'>
                                                         Report error
                                                     </button>
                                                 </div>
