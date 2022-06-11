@@ -13,6 +13,9 @@ const getUserAccessToken = async (code) => {
         "Content-Type": "application/x-www-form-urlencoded"
     };
     try {
+        console.log(tokenData);
+        console.log(process.env.PESU_DISCORD_CLIENT_ID);
+        console.log(process.env.PESU_DISCORD_CLIENT_SECRET);
         const tokenResponse = await axios.post(
             tokenUrl, tokenData, {
                 headers: tokenHeaders,
@@ -25,6 +28,7 @@ const getUserAccessToken = async (code) => {
         return tokenResponse.data.access_token;
     }
     catch (error) {
+        console.log(error)
         return null;
     }
 };
