@@ -1,10 +1,15 @@
 import { getUserClientId } from "../../utils/discordMember";
 import roleAlreadyExists from "../../utils/roleAlreadyExists";
+import { runCors, runLimiter } from "../../utils/middleware";
 
 // This API is used to retrive the user's client ID with the user's access token
 // and check if he/she already has the "Verified" role
 
 const handler = async (req, res) => {
+    // Middleware
+    await runCors(req, res, "POST");
+    await runLimiter(req, res);
+
     // Reject any request that is not a POST
     if (req.method === "POST") {
         const userToken = req.body.userToken;

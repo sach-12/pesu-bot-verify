@@ -1,9 +1,14 @@
 import {getUserAccessToken} from "../../utils/discordMember";
+import {runCors, runLimiter} from "../../utils/middleware";
 
 // This API is  used to retrieve user token access from the "Code" discord generates
 // on successful authentication
 
 const handler = async (req, res) => {
+    // Middleware
+    await runCors(req, res, "POST");
+    await runLimiter(req, res);
+
     // Reject any request that is not a POST
     if (req.method === "POST") {
         const code = req.body.code;

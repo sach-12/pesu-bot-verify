@@ -1,7 +1,12 @@
 import getBatchDetails from "../../utils/batchDetails";
 import { getUserClientId } from "../../utils/discordMember";
+import { runCors, runLimiter } from "../../utils/middleware";
 
 const handler = async (req, res) => {
+    // Middlewalre
+    await runCors(req, res, "POST");
+    await runLimiter(req, res);
+
     // Reject any request that is not a POST
     if (req.method === "POST") {
         const userToken = req.body.userToken;

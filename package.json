@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "axios": "^0.27.2",
+    "cors": "^2.8.5",
     "discord.js": "^13.7.0",
+    "express-rate-limit": "^6.4.0",
     "mongoose": "^6.3.4",
     "next": "12.1.6",
     "react": "^17.0.2",

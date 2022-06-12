@@ -1,8 +1,13 @@
 import alreadyValidated from "../../utils/alreadyValidated";
 import { getUserClientId } from "../../utils/discordMember";
+import { runCors, runLimiter } from "../../utils/middleware";
 
 // This API checks if the user's PRN is already on the verified collection in MongoDB
 const handler = async (req, res) => {
+    // Middleware
+    await runCors(req, res, "POST");
+    await runLimiter(req, res);
+
     // Reject any request that is not a POST
     if (req.method === "POST") {
         const userToken = req.body.userToken;

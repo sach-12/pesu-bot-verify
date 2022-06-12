@@ -55,7 +55,7 @@ export default function Home() {
                         }
                     })
                     .catch(err => {
-                        if(err.response.status.toString().charAt(0) === '4') {
+                        if((err.response.status >=400) && (err.response.status <500)) {
                             setInit(`Error: ${err.response.data.message}`)
                         }
                         else {
@@ -64,7 +64,7 @@ export default function Home() {
                     })
                 })
                 .catch(err => {
-                    if(err.response.status.toString().charAt(0) === '4') {
+                    if((err.response.status >=400) && (err.response.status <500)) {
                         setInit(`Error: ${err.response.data.message}`)
                     }
                     else {
@@ -77,8 +77,8 @@ export default function Home() {
             }
         })
         .catch(err => {
-            if(err.response.status.toString().charAt(0) === '4') {
-                setInit('Error: Method not allowed')
+            if((err.response.status >=400) && (err.response.status <500)) {
+                setInit(`Error: ${err.response.data.message}`)
             }
             else{
                 setInit('Error: Server initialization failed')
@@ -118,7 +118,7 @@ export default function Home() {
                     }
                 })
                 .catch(err => {
-                    if(err.response.status.toString().charAt(0) === '4') {
+                    if((err.response.status >=400) && (err.response.status <500)) {
                         setPrnError(`Error: ${err.response.data.message}`)
                     }
                     else {
@@ -127,7 +127,7 @@ export default function Home() {
                 })
             })
             .catch(err => {
-                if(err.response.status.toString().charAt(0) === '4') {
+                if((err.response.status >=400) && (err.response.status <500)) {
                     setPrnError(`Error: ${err.response.data.message}`)
                 }
                 else {
@@ -166,7 +166,7 @@ export default function Home() {
                     setSuccessful(true)
                 })
                 .catch(err => {
-                    if(err.response.status.toString().charAt(0) === '4') {
+                    if((err.response.status >=400) && (err.response.status <500)) {
                         setSrnError(`Error: ${err.response.data.message}`)
                     }
                     else {
@@ -200,7 +200,7 @@ export default function Home() {
                     setSuccessful(true)
                 })
                 .catch(err => {
-                    if(err.response.status.toString().charAt(0) === '4') {
+                    if((err.response.status >=400) && (err.response.status <500)) {
                         setSectionError(`Error: ${err.response.data.message}`)
                     }
                     else {

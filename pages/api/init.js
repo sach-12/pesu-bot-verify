@@ -1,10 +1,15 @@
 import connectToDb from "../../utils/database";
 import {getBotClient} from "../../utils/discordClient";
+import {runCors, runLimiter} from "../../utils/middleware";
 
 let ready = false
 
 // This API is used to establish a connections with MongoDB and Discord.
 const handler = async (req, res) => {
+    // Middleware
+    await runCors(req, res, "GET");
+    await runLimiter(req, res);
+
     // Reject any request that is not a GET
     if(req.method === "GET") {
         if(!ready){
