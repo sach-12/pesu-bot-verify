@@ -1,11 +1,12 @@
 import getBatchDetails from "../../utils/batchDetails";
 import { getUserClientId } from "../../utils/discordMember";
-import { runCors, runLimiter } from "../../utils/middleware";
+import { runCors, runLimiter, runUserIdLimiter } from "../../utils/middleware";
 
 const handler = async (req, res) => {
     // Middlewalre
     await runCors(req, res, "POST");
     await runLimiter(req, res);
+    await runUserIdLimiter(req, res);
 
     // Reject any request that is not a POST
     if (req.method === "POST") {
@@ -32,20 +33,10 @@ const handler = async (req, res) => {
             return;
         }
         else {
-            if (prn.toString().charAt(7) === "8") {
-                res.status(200).json({
-                    message: "OK",
-                    section: batchDetails.Section.charAt(batchDetails.Section.length - 1)
-                });
-                return;
-            }
-            else {
-                res.status(200).json({
-                    message: "OK",
-                    srn: batchDetails.SRN,
-                });
-                return
-            }
+            res.status(200).json({
+                message: "OK"
+            });
+            return;
         }
     }
     else {

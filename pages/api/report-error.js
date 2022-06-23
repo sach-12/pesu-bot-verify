@@ -1,8 +1,7 @@
-import alreadyValidated from "../../utils/alreadyValidated";
 import { getUserClientId } from "../../utils/discordMember";
+import reportError from "../../utils/reportError";
 import { runCors, runLimiter, runUserIdLimiter } from "../../utils/middleware";
 
-// This API checks if the user's PRN is already on the verified collection in MongoDB
 const handler = async (req, res) => {
     // Middleware
     await runCors(req, res, "POST");
@@ -12,38 +11,34 @@ const handler = async (req, res) => {
     // Reject any request that is not a POST
     if (req.method === "POST") {
         const userToken = req.body.userToken;
-        const prn = req.body.prn;
-        if (!prn || !userToken) {
+        const errorType = req.body.errorType;
+        const errorMessage = req.body.errorMessage;
+
+        if (!errorType || !errorMessage) {
             res.status(400).json({
-                message: "Missing body parameter: prn or userToken"
+                message: "Missing body parameter: errorType or errorMessage"
             });
             return;
         }
+
         const userClientId = await getUserClientId(userToken);
         if (!userClientId) {
             res.status(401).json({
-                message: "Invalid user token"
+                message: "Authentication failed"
             });
             return;
         }
-        const avBool = await alreadyValidated(prn);
-        if (avBool) {
-            res.status(403).json({
-                message: "You're already validated. The server allows only one account per PRN. No alts allowed",
-            });
-            return;
-        }
-        else {
-            res.status(200).json({
-                message: "OK"
-            });
-            return
-        }
-    }
-    else {
+
+        const errorId = await reportError(userClientId, errorType, errorMessage);
+        res.status(200).json({
+            message: "OK",
+            errorId: errorId
+        })
+    } else {
         res.status(405).json({
             message: "Method not allowed"
         });
+        return;
     }
 }
 

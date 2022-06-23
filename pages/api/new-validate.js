@@ -3,12 +3,14 @@ import { getUserClientId } from "../../utils/discordMember";
 import getBatchDetails from "../../utils/batchDetails";
 import roleAlreadyExists from "../../utils/roleAlreadyExists";
 import newValidate from "../../utils/newValidate";
-import { runCors, runLimiter } from "../../utils/middleware";
+import { runCors, runLimiter, runUserIdLimiter } from "../../utils/middleware";
 
 const handler = async (req, res) => {
     // Middleware
     await runCors(req, res, "POST");
     await runLimiter(req, res);
+    await runUserIdLimiter(req, res);
+    
 
     // Reject any request that is not a POST
     if (req.method === "POST") {

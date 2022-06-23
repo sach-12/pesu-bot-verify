@@ -16,12 +16,10 @@ export default function Home() {
 
     const [collectSrn, setCollectSrn] = useState(false) // Proceed to collect SRN
     const [srn, setSrn] = useState('') // User-entered SRN
-    const [serverSrn, setServerSrn] = useState('') // Server-provided SRN
     const [srnError, setSrnError] = useState(null) // Error message for SRN
 
     const [collectSection, setCollectSection] = useState(false) // Proceed to collect section
     const [section, setSection] = useState('') // User-entered section
-    const [serverSection, setServerSection] = useState('') // Server-provided section
     const [sectionError, setSectionError] = useState(null) // Error message for section
 
     const [succesful, setSuccessful] = useState(false) // Proceed to successful page on successful validation
@@ -99,7 +97,7 @@ export default function Home() {
             })
             .then(res => {
                 // Get server-provided SRN/Section based on year
-                axios.post('/api/get-srn-or-section', {
+                axios.post('/api/prn-exists', {
                     userToken: userToken,
                     prn: prn.toUpperCase()
                 })
@@ -107,12 +105,10 @@ export default function Home() {
                     setPrnError(null)
                     // PES1201"8"00000: The 7th index decides the year
                     if(prn.charAt(7) === '8') {
-                        setServerSection(res.data.section)
                         setSrnError(null)
                         setCollectSection(true)
                     }
                     else {
-                        setServerSrn(res.data.srn)
                         setSectionError(null)
                         setCollectSrn(true)
                     }
@@ -151,32 +147,26 @@ export default function Home() {
             setSrnError('SRN cannot be empty')
         }
         else {
-            // If user-entered SRN is same as server-provided SRN
-            if(srn.toUpperCase() === serverSrn) {
-                // Validate user, provide roles, update DB, etc.
-                axios.post('/api/new-validate', {
-                    userToken: userToken,
-                    prn: prn.toUpperCase(),
-                    srn: srn.toUpperCase()
-                })
-                .then(res => {
-                    setSrnError(res.data.message)
-                    setSuccessSection(res.data.section)
-                    setSuccessBranch(res.data.branch)
-                    setSuccessful(true)
-                })
-                .catch(err => {
-                    if((err.response.status >=400) && (err.response.status <500)) {
-                        setSrnError(`Error: ${err.response.data.message}`)
-                    }
-                    else {
-                        setSrnError('Error: Internal Server Error')
-                    }
-                })
-            }
-            else {
-                setSrnError("Error: SRN doesn't match. Try again")
-            }
+            // Validate user, provide roles, update DB, etc.
+            axios.post('/api/new-validate', {
+                userToken: userToken,
+                prn: prn.toUpperCase(),
+                srn: srn.toUpperCase()
+            })
+            .then(res => {
+                setSrnError(res.data.message)
+                setSuccessSection(res.data.section)
+                setSuccessBranch(res.data.branch)
+                setSuccessful(true)
+            })
+            .catch(err => {
+                if((err.response.status >=400) && (err.response.status <500)) {
+                    setSrnError(`Error: ${err.response.data.message}`)
+                }
+                else {
+                    setSrnError('Error: Internal Server Error')
+                }
+            })
         }
     }
 
@@ -186,36 +176,60 @@ export default function Home() {
             setSectionError('Section cannot be empty')
         }
         else {
-            // If user-entered section is same as server-provided section
-            if(section.toUpperCase() === serverSection) {
-                // Validate user, provide roles, update DB, etc.
-                axios.post('/api/new-validate', {
-                    userToken: userToken,
-                    prn: prn.toUpperCase(),
-                    section: section.toUpperCase()
-                })
-                .then(res => {
-                    setSuccessSection(res.data.section)
-                    setSuccessBranch(res.data.branch)
-                    setSuccessful(true)
-                })
-                .catch(err => {
-                    if((err.response.status >=400) && (err.response.status <500)) {
-                        setSectionError(`Error: ${err.response.data.message}`)
-                    }
-                    else {
-                        setSectionError('Error: Internal Server Error')
-                    }
-                })
-            }
-            else {
-                setSectionError("Error: Section doesn't match. Try again")
-            }
+            // Validate user, provide roles, update DB, etc.
+            axios.post('/api/new-validate', {
+                userToken: userToken,
+                prn: prn.toUpperCase(),
+                section: section.toUpperCase()
+            })
+            .then(res => {
+                setSuccessSection(res.data.section)
+                setSuccessBranch(res.data.branch)
+                setSuccessful(true)
+            })
+            .catch(err => {
+                if((err.response.status >=400) && (err.response.status <500)) {
+                    setSectionError(`Error: ${err.response.data.message}`)
+                }
+                else {
+                    setSectionError('Error: Internal Server Error')
+                }
+            })
         }
     }
 
     const handleReport = (source) => {
-        alert('This function is still under development. For now, DM Han about it.')
+        let errorType = '';
+        let errorMessage = '';
+        if(source === 'prn') {
+            errorType = 'PRN';
+            errorMessage = `${prnError}\nPRN: ${prn}`;
+        }
+        else if(source === 'srn') {
+            errorType = 'SRN';
+            errorMessage = `${srnError}\nPRN: ${prn}\nSRN: ${srn}`;
+        }
+        else if(source === 'section') {
+            errorType = 'Section';
+            errorMessage = `${sectionError}\nPRN: ${prn}\nSection: ${section}`;
+        }
+        axios.post('/api/report-error', {
+            userToken: userToken,
+            errorType: errorType,
+            errorMessage: errorMessage
+        })
+        .then(res => {
+            const errorId = res.data.errorId;
+            alert(`Your error has been reported. Error ID: ${errorId}.`)
+        })
+        .catch(err => {
+            if((err.response.status >=400) && (err.response.status <500)) {
+                alert(`Error: ${err.response.data.message}`)
+            }
+            else {
+                alert('Error: Internal Server Error')
+            }
+        })
     }
 
 
