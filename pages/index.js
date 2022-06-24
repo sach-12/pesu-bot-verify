@@ -9,6 +9,7 @@ export default function Home() {
     // Initial states
     const [init, setInit] = useState('Initializing...')
     const [userToken, setUserToken] = useState('')
+    const [userIp, setUserIp] = useState('')
 
     const [proceed, setProceed] = useState(false) // Proceed to form
     const [prn, setPrn] = useState('') // User-entered PRN
@@ -28,29 +29,44 @@ export default function Home() {
 
     useEffect(() => {
         // Backend initialization
-        axios.get('/api/init')
+        axios.get('https://geolocation-db.com/json/')
         .then(res => {
-            setInit('Verifying authentication...')
-            // Get "code" from discord redirected URL
-            const code = new URLSearchParams(window.location.search).get('code')
-            if (code) {
-                axios.post('/api/get-user-access-token', {
-                    code: code
-                })
-                .then(res => {
-                    setInit('Checking you out in the server...')
-                    setUserToken(res.data.userToken) // This user token will be used for all future requests
-                    axios.post('/api/role-already-exists', {
-                        userToken: res.data.userToken
-                    })
+            setUserIp(res.data.IPv4)
+            axios.get('/api/init', { headers: headers })
+            .then(res => {
+                setInit('Verifying authentication...')
+                // Get "code" from discord redirected URL
+                const code = new URLSearchParams(window.location.search).get('code')
+                const headers = {
+                    'x-real-ip': userIp,
+                }
+                if (code) {
+                    axios.post('/api/get-user-access-token', {
+                        code: code
+                    }, { headers: headers })
                     .then(res => {
-                        if(res.status === 200) {
-                            setInit('Initialization complete')
-                            setProceed(true)
-                        }
-                        else {
-                            setInit(`Error: ${res.data.message}`)
-                        }
+                        setInit('Checking you out in the server...')
+                        setUserToken(res.data.userToken) // This user token will be used for all future requests
+                        axios.post('/api/role-already-exists', {
+                            userToken: res.data.userToken
+                        }, { headers: headers })
+                        .then(res => {
+                            if(res.status === 200) {
+                                setInit('Initialization complete')
+                                setProceed(true)
+                            }
+                            else {
+                                setInit(`Error: ${res.data.message}`)
+                            }
+                        })
+                        .catch(err => {
+                            if((err.response.status >=400) && (err.response.status <500)) {
+                                setInit(`Error: ${err.response.data.message}`)
+                            }
+                            else {
+                                setInit('Error: Server initialization failed')
+                            }
+                        })
                     })
                     .catch(err => {
                         if((err.response.status >=400) && (err.response.status <500)) {
@@ -60,27 +76,22 @@ export default function Home() {
                             setInit('Error: Server initialization failed')
                         }
                     })
-                })
-                .catch(err => {
-                    if((err.response.status >=400) && (err.response.status <500)) {
-                        setInit(`Error: ${err.response.data.message}`)
-                    }
-                    else {
-                        setInit('Error: Server initialization failed')
-                    }
-                })
-            }
-            else {
-                setInit('Error: Authentication failed')
-            }
+                }
+                else {
+                    setInit('Error: Authentication failed')
+                }
+            })
+            .catch(err => {
+                if((err.response.status >=400) && (err.response.status <500)) {
+                    setInit(`Error: ${err.response.data.message}`)
+                }
+                else{
+                    setInit('Error: Server initialization failed')
+                }
+            })
         })
         .catch(err => {
-            if((err.response.status >=400) && (err.response.status <500)) {
-                setInit(`Error: ${err.response.data.message}`)
-            }
-            else{
-                setInit('Error: Server initialization failed')
-            }
+            setInit('Error: ' + err)
         })
     }, [])
 
@@ -90,17 +101,20 @@ export default function Home() {
             setPrnError('PRN cannot be empty')
         }
         else {
+            const headers = {
+                'x-real-ip': userIp
+            }
             // Check if PRN already in MongoDB
             axios.post('/api/already-validated-prn', {
                 userToken: userToken,
                 prn: prn.toUpperCase()
-            })
+            }, { headers: headers })
             .then(res => {
                 // Get server-provided SRN/Section based on year
                 axios.post('/api/prn-exists', {
                     userToken: userToken,
                     prn: prn.toUpperCase()
-                })
+                }, { headers: headers })
                 .then(res => {
                     setPrnError(null)
                     // PES1201"8"00000: The 7th index decides the year
@@ -147,12 +161,15 @@ export default function Home() {
             setSrnError('SRN cannot be empty')
         }
         else {
+            const headers = {
+                'x-real-ip': userIp
+            }
             // Validate user, provide roles, update DB, etc.
             axios.post('/api/new-validate', {
                 userToken: userToken,
                 prn: prn.toUpperCase(),
                 srn: srn.toUpperCase()
-            })
+            }, { headers: headers })
             .then(res => {
                 setSrnError(res.data.message)
                 setSuccessSection(res.data.section)
@@ -176,12 +193,15 @@ export default function Home() {
             setSectionError('Section cannot be empty')
         }
         else {
+            const headers = {
+                'x-real-ip': userIp
+            }
             // Validate user, provide roles, update DB, etc.
             axios.post('/api/new-validate', {
                 userToken: userToken,
                 prn: prn.toUpperCase(),
                 section: section.toUpperCase()
-            })
+            }, { headers: headers })
             .then(res => {
                 setSuccessSection(res.data.section)
                 setSuccessBranch(res.data.branch)
@@ -213,11 +233,15 @@ export default function Home() {
             errorType = 'Section';
             errorMessage = `${sectionError}\nPRN: ${prn}\nSection: ${section}`;
         }
+
+        const headers = {
+            'x-real-ip': userIp
+        }
         axios.post('/api/report-error', {
             userToken: userToken,
             errorType: errorType,
             errorMessage: errorMessage
-        })
+        }, { headers: headers })
         .then(res => {
             const errorId = res.data.errorId;
             alert(`Your error has been reported. Error ID: ${errorId}.`)
