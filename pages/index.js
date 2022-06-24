@@ -32,14 +32,14 @@ export default function Home() {
         axios.get('https://geolocation-db.com/json/')
         .then(res => {
             setUserIp(res.data.IPv4)
+            const headers = {
+                'x-real-ip': userIp,
+            }
             axios.get('/api/init', { headers: headers })
             .then(res => {
                 setInit('Verifying authentication...')
                 // Get "code" from discord redirected URL
                 const code = new URLSearchParams(window.location.search).get('code')
-                const headers = {
-                    'x-real-ip': userIp,
-                }
                 if (code) {
                     axios.post('/api/get-user-access-token', {
                         code: code
