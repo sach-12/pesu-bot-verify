@@ -28,13 +28,12 @@ export default function Home({ ip }) {
     const [successBranch, setSuccessBranch] = useState('') // Server-provided branch
 
     useEffect(() => {
-        console.log('IP: ' + ip)
         // Backend initialization
         setUserIp(ip)
         const headers = {
             'x-real-ip': userIp,
         }
-        axios.get('/api/init', { headers: headers })
+        axios.get('/api/init')
         .then(res => {
             setInit('Verifying authentication...')
             // Get "code" from discord redirected URL
@@ -377,6 +376,7 @@ export default function Home({ ip }) {
 }
 
 export async function getServerSideProps({ req }) {
+    console.log(req.headers)
     const ip = req.headers['x-real-ip'] || req.connection.remoteAddress;
 
     return {

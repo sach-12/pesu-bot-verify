@@ -13,7 +13,7 @@ const ipLimiter = rateLimit({
     },
     keyGenerator: (req) => {
         const forwarded = req.headers["x-forwarded-for"];
-        const ip = forwarded ? forwarded.split(/, /)[0] : req.socket.remoteAddress;
+        const ip = forwarded ? forwarded.split(/, /)[0] : req.headers["x-real-ip"];
         return ip;
     }
 })
