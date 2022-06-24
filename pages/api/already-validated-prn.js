@@ -6,7 +6,7 @@ import { runCors, runLimiter, runUserIdLimiter } from "../../utils/middleware";
 const handler = async (req, res) => {
     // Middleware
     await runCors(req, res, "POST");
-    // await runLimiter(req, res);
+    await runLimiter(req, res);
     await runUserIdLimiter(req, res);
 
     // Reject any request that is not a POST
