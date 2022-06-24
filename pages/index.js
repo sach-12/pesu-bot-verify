@@ -33,7 +33,7 @@ export default function Home({ ip }) {
         const headers = {
             'x-real-ip': userIp,
         }
-        axios.get('/api/init')
+        axios.get('/api/init', { headers: headers })
         .then(res => {
             setInit('Verifying authentication...')
             // Get "code" from discord redirected URL
@@ -376,12 +376,11 @@ export default function Home({ ip }) {
 }
 
 export async function getServerSideProps({ req }) {
-    console.log(req.headers)
     const ip = req.headers['x-real-ip'] || req.connection.remoteAddress;
 
     return {
         props: {
             ip,
-        }, // will be passed to the page component as props
+        }
     };
 }

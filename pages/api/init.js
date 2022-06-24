@@ -6,11 +6,9 @@ let ready = false
 
 // This API is used to establish a connections with MongoDB and Discord.
 const handler = async (req, res) => {
-    console.log(req.socket.remoteAddress)
-    console.log(req.headers['x-real-ip'])
     // Middleware
     await runCors(req, res, "GET");
-    // await runLimiter(req, res);
+    await runLimiter(req, res);
 
     // Reject any request that is not a GET
     if(req.method === "GET") {
