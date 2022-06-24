@@ -5,7 +5,7 @@ import axios from 'axios'
 import Navbar from '../components/Navbar'
 
 
-export default function Home() {
+export default function Home({ ip }) {
     // Initial states
     const [init, setInit] = useState('Initializing...')
     const [userToken, setUserToken] = useState('')
@@ -28,45 +28,35 @@ export default function Home() {
     const [successBranch, setSuccessBranch] = useState('') // Server-provided branch
 
     useEffect(() => {
+        console.log('IP: ' + ip)
         // Backend initialization
-        axios.get('https://geolocation-db.com/json/')
+        setUserIp(ip)
+        const headers = {
+            'x-real-ip': userIp,
+        }
+        axios.get('/api/init', { headers: headers })
         .then(res => {
-            setUserIp(res.data.IPv4)
-            const headers = {
-                'x-real-ip': userIp,
-            }
-            axios.get('/api/init', { headers: headers })
-            .then(res => {
-                setInit('Verifying authentication...')
-                // Get "code" from discord redirected URL
-                const code = new URLSearchParams(window.location.search).get('code')
-                if (code) {
-                    axios.post('/api/get-user-access-token', {
-                        code: code
+            setInit('Verifying authentication...')
+            // Get "code" from discord redirected URL
+            const code = new URLSearchParams(window.location.search).get('code')
+            if (code) {
+                axios.post('/api/get-user-access-token', {
+                    code: code
+                }, { headers: headers })
+                .then(res => {
+                    setInit('Checking you out in the server...')
+                    setUserToken(res.data.userToken) // This user token will be used for all future requests
+                    axios.post('/api/role-already-exists', {
+                        userToken: res.data.userToken
                     }, { headers: headers })
                     .then(res => {
-                        setInit('Checking you out in the server...')
-                        setUserToken(res.data.userToken) // This user token will be used for all future requests
-                        axios.post('/api/role-already-exists', {
-                            userToken: res.data.userToken
-                        }, { headers: headers })
-                        .then(res => {
-                            if(res.status === 200) {
-                                setInit('Initialization complete')
-                                setProceed(true)
-                            }
-                            else {
-                                setInit(`Error: ${res.data.message}`)
-                            }
-                        })
-                        .catch(err => {
-                            if((err.response.status >=400) && (err.response.status <500)) {
-                                setInit(`Error: ${err.response.data.message}`)
-                            }
-                            else {
-                                setInit('Error: Server initialization failed')
-                            }
-                        })
+                        if(res.status === 200) {
+                            setInit('Initialization complete')
+                            setProceed(true)
+                        }
+                        else {
+                            setInit(`Error: ${res.data.message}`)
+                        }
                     })
                     .catch(err => {
                         if((err.response.status >=400) && (err.response.status <500)) {
@@ -76,22 +66,27 @@ export default function Home() {
                             setInit('Error: Server initialization failed')
                         }
                     })
-                }
-                else {
-                    setInit('Error: Authentication failed')
-                }
-            })
-            .catch(err => {
-                if((err.response.status >=400) && (err.response.status <500)) {
-                    setInit(`Error: ${err.response.data.message}`)
-                }
-                else{
-                    setInit('Error: Server initialization failed')
-                }
-            })
+                })
+                .catch(err => {
+                    if((err.response.status >=400) && (err.response.status <500)) {
+                        setInit(`Error: ${err.response.data.message}`)
+                    }
+                    else {
+                        setInit('Error: Server initialization failed')
+                    }
+                })
+            }
+            else {
+                setInit('Error: Authentication failed')
+            }
         })
         .catch(err => {
-            setInit('Error: ' + err)
+            if((err.response.status >=400) && (err.response.status <500)) {
+                setInit(`Error: ${err.response.data.message}`)
+            }
+            else{
+                setInit('Error: Server initialization failed')
+            }
         })
     }, [])
 
@@ -379,4 +374,14 @@ export default function Home() {
 
         </div>
     )
+}
+
+export async function getServerSideProps({ req }) {
+    const ip = req.headers['x-real-ip'] || req.connection.remoteAddress;
+
+    return {
+        props: {
+            ip,
+        }, // will be passed to the page component as props
+    };
 }
