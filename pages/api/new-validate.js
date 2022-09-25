@@ -63,7 +63,7 @@ const handler = async (req, res) => {
             return;
         }
         else {
-            if (prn.toString().toUpperCase().charAt(7) === "8") {
+            if (prn.toString().toUpperCase().charAt(7) === "8" || prn.toString().toUpperCase().charAt(7) === "2") {
                 if (batchDetails.Section.charAt(batchDetails.Section.length - 1) === section.toUpperCase()) {
                     // All functions needed to validate user like role adding, database entry, etc.
                     const response = await newValidate(userClientId, prn);

@@ -112,7 +112,7 @@ export default function Home({ ip }) {
                 .then(res => {
                     setPrnError(null)
                     // PES1201"8"00000: The 7th index decides the year
-                    if(prn.charAt(7) === '8') {
+                    if(prn.charAt(7) === '8' || prn.charAt(7) === '2') {
                         setSrnError(null)
                         setCollectSection(true)
                     }
