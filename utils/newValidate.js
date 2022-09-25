@@ -89,6 +89,7 @@ const newValidate = async(userId, prn) => {
             successEmbed.addField("\u200b", "DMs were closed", true)
         }
         await botLogsChannel.send({
+            content: `<@${member.id}>`,
             embeds: [successEmbed]
         });
 
