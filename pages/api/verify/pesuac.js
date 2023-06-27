@@ -62,7 +62,6 @@ const handler = async (req, res) => {
 		var campus = null;
 		var year = null;
 		if (response.data.status) {
-            console.log(`PESU Academy auth: ${response.data}`);
 			// Connect to database
 			await connect();
 
@@ -125,6 +124,7 @@ const handler = async (req, res) => {
 			});
 		}
 	} catch (err) {
+        console.log(`Error in PESU Academy auth for ${user.id}`);
 		console.log(err);
 		return res.status(500).json({
 			message: "Internal Server Error",
@@ -145,11 +145,14 @@ const handler = async (req, res) => {
 
 	try {
 		var roles = rolesApiResponse.data;
+        console.log(`User ID: ${user.id}`)
         console.log(`Branch: ${branch}, Year: ${year}, Campus: ${campus}`)
 		var branchRoleId = roles.find((role) => role.name === branch).id;
 		var yearRoleId = roles.find((role) => role.name === year).id;
 		var campusRoleId = roles.find((role) => role.name === campus).id;
 	} catch (err) {
+        console.log(`Error in getting role IDs`);
+        console.log(err);
 		return res.status(500).json({
 			message: "Internal Server Error. Code: 2",
 		});

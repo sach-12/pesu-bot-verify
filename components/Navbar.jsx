@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { useStore } from "@/utils/store";
-import menu from "../assets/menu.svg";
+import menu from "@/assets/menu.svg";
 import axios from "axios";
 
 const Navbar = () => {

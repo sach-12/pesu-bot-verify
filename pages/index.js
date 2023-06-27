@@ -44,13 +44,13 @@ const Home = ({ user, token }) => {
 								Join the PESU Discord Server
 							</button>
 						)}
-						{store.user.guild_info.is_verified && (
+						{/* {store.user.guild_info.is_verified && (
 							<button
 								onClick={() => router.push("/event")}
 								className='bg-c0 text-c4 rounded-sm px-4 py-2 m-2'>
 								Post Event
 							</button>
-						)}
+						)} */}
 						{!store.user.guild_info.is_verified && (
 							<button
 								onClick={() => router.push("/verify")}
