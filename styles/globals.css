@@ -1,6 +1,5 @@
 body {
-    font-family: "mono";
-    background-color: rgb(21, 23, 42);
+    background-color: #003554;
 }
 @tailwind base;
 @tailwind components;

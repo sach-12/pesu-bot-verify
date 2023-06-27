@@ -1,7 +1,20 @@
-import '../styles/globals.css'
+import "@/styles/globals.css";
+import Navbar from "@/components/Navbar";
+import Head from "next/head";
 
-function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />
+const MyApp = ({ Component, pageProps }) => {
+	return (
+		<>
+			<Head>
+				<link
+					href='https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap'
+					rel='stylesheet'
+				/>
+			</Head>
+			<Navbar />
+			<Component {...pageProps} />
+		</>
+	);
 }
 
-export default MyApp
+export default MyApp;

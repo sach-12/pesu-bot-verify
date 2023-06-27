@@ -12,11 +12,14 @@
     "axios": "^0.27.2",
     "cors": "^2.8.5",
     "discord.js": "^13.7.0",
-    "express-rate-limit": "^6.4.0",
-    "mongoose": "^6.3.4",
-    "next": "12.1.6",
+    "express-rate-limit": "^6.7.0",
+    "iron-session": "^6.3.1",
+    "mongoose": "^6.10.5",
+    "next": "^12.1.6",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "react-loading": "^2.0.3",
+    "zustand": "^4.3.7"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.7",
