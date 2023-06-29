@@ -69,7 +69,7 @@ const VerifyWithPesuAc = ({ user, token }) => {
 		return (
 			<div className='mb-6 w-4/5 sm:w-3/5 md:w-2/5 mx-auto h-40'>
 				<div className='text-justify text-c2 text-xl mb-4'>
-					Your PESU Academy username and password are required to verify your account.
+					Your PESU Academy username and password are required to verify and link your student and discord accounts.
 					Don't worry, we don't store any information. You can check out the source code{" "}
 					<a
 						href='https://github.com/HackerSpace-PESU/pesu-auth/'
@@ -80,7 +80,7 @@ const VerifyWithPesuAc = ({ user, token }) => {
 					.
 				</div>
 				<label htmlFor='username' className='block my-2 w-full text-sm font-medium text-c4'>
-					PESU Academy Username
+					PESU Academy SRN or PRN
 				</label>
 				<input
 					type='text'
@@ -138,7 +138,7 @@ const VerifyWithPesuAc = ({ user, token }) => {
 					<button
 						className='bg-c4 w-full text-c0 px-8 py-3 rounded-sm text-sm font-medium hover:bg-c0 hover:text-c4 transition-colors duration-200 shadow-md'
 						onClick={() => router.push("/verify")}>
-						Or use your PRN
+						Or use your PRN and SRN
 					</button>
 				</div>
 				<div className='text-center text-sm text-c3 py-4'>
