@@ -34,7 +34,7 @@ const handler = async (req, res) => {
 	const batch_details = await batch.findOne({ PRN: prn });
 	if (!batch_details) {
 		return res.status(404).json({
-			message: "PRN Not Found",
+			message: "PRN not found. Try the PESU Academy authentication method instead.",
 		});
 	}
 
