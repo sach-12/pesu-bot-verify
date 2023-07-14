@@ -57,7 +57,7 @@ const handler = async (req, res) => {
 
 	// PESU Academy auth and add to database
 	try {
-		const response = await axios.post(pesuAuthUrl, JSON.stringify(payload), { headers });
+		var response = await axios.post(pesuAuthUrl, JSON.stringify(payload), { headers });
 		var branch = null;
 		var campus = null;
 		var year = null;
@@ -190,6 +190,7 @@ const handler = async (req, res) => {
 							inline: true,
 						},
 					],
+					color: 0xff0000,
 					timestamp: new Date(),
 					footer: {
 						text: "PESU Bot",
@@ -246,8 +247,8 @@ const handler = async (req, res) => {
 	};
 	const promise2 = axios
 		.post(dmApiUrl, dmApiData, { headers: discordApiHeaders })
-		.then(async (response) => {
-			const dmChannelId = response.data.id;
+		.then(async (res) => {
+			const dmChannelId = res.data.id;
 			const dmMessage = `
 Welcome to our humble little server, where the verification process is more rigorous than getting a security clearance for Area 51. 
 
