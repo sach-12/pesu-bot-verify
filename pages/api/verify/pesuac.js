@@ -162,22 +162,32 @@ const handler = async (req, res) => {
 						{
 							name: "User",
 							value: `<@${user.id}>`,
+							inline: true,
 						},
 						{
 							name: "User ID",
 							value: user.id,
+							inline: true,
+						},
+						{
+							name: "PRN",
+							value: response.data.profile.prn,
+							inline: true,
 						},
 						{
 							name: "Branch",
 							value: branch,
+							inline: true,
 						},
 						{
 							name: "Year",
 							value: year,
+							inline: true,
 						},
 						{
 							name: "Campus",
 							value: campus,
+							inline: true,
 						},
 					],
 					timestamp: new Date(),
