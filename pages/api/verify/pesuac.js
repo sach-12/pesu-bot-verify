@@ -153,8 +153,50 @@ const handler = async (req, res) => {
 	} catch (err) {
         console.log(`Error in getting role IDs`);
         console.log(err);
+		const threadMessageUrl = `https://discord.com/api/channels/1129317221848596490/messages`;
+		const threadMessageData = {
+			embeds: [
+				{
+					title: `Roles missing`,
+					fields: [
+						{
+							name: "User",
+							value: `<@${user.id}>`,
+						},
+						{
+							name: "User ID",
+							value: user.id,
+						},
+						{
+							name: "Branch",
+							value: branch,
+						},
+						{
+							name: "Year",
+							value: year,
+						},
+						{
+							name: "Campus",
+							value: campus,
+						},
+					],
+					timestamp: new Date(),
+					footer: {
+						text: "PESU Bot",
+					},
+				},
+			],
+		};
+		try {
+			await axios.post(threadMessageUrl, threadMessageData, {
+				headers: discordApiHeaders,
+			});
+		} catch (err) {
+			console.log(`Error in sending message to thread`);
+			console.log(err);
+		}
 		return res.status(500).json({
-			message: "Internal Server Error. Code: 2",
+			message: "Internal Server Error. You will be notified when this is fixed.",
 		});
 	}
 	const verifiedRoleId = "749683320941445250";
