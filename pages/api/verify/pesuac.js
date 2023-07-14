@@ -76,9 +76,15 @@ const handler = async (req, res) => {
 			// create batch details if not exists
 			var batchDetails = await batch.findOne({ PRN: response.data.profile.prn });
 			if (!batchDetails) {
-				branch =
-					response.data.know_your_class_and_section.branch ||
-					response.data.profile.branch_short_code;
+				if (response.data.know_your_class_and_section.branch && response.data.know_your_class_and_section.branch !== "NA") {
+					branch = response.data.know_your_class_and_section.branch;
+				} else if (response.data.profile.branch_short_code && response.data.profile.branch_short_code !== "NA") {
+					branch = response.data.profile.branch_short_code;
+				} else {
+					return res.status(500).json({
+						message: "Branch not found. You're gonna have to wait for a while.",
+					});
+				}
 				if (
 					response.data.know_your_class_and_section.department &&
 					response.data.know_your_class_and_section.department.includes("Campus")
