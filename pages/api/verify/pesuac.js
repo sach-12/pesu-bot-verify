@@ -23,10 +23,6 @@ const handler = async (req, res) => {
 		});
 	}
 
-	return res.status(200).json({
-		message: "We have temporarily disabled entry to the server. Please check back later.",
-	});
-
 	// Check if user already has verified role
 	const roleExistsApiUrl = `https://discord.com/api/guilds/742797665301168220/members/${user.id}`;
 	const discordApiHeaders = {

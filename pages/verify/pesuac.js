@@ -25,17 +25,6 @@ const VerifyWithPesuAc = ({ user, token }) => {
 		setLoading(false);
 	}, [router.isReady]);
 
-	const NoEntryComponent = () => {
-		return (
-			<div>
-				<h1 className='text-4xl text-red-700 p-4 text-center'>
-					We have temporarily disabled entry to the
-					server. Please check back later.
-				</h1>
-			</div>
-		)
-	}
-
 	const VerifyInputContainer = () => {
 		const [username, setUsername] = useState("");
 		const [password, setPassword] = useState("");
@@ -212,8 +201,7 @@ const VerifyWithPesuAc = ({ user, token }) => {
 								<h1 className='text-4xl text-c4 p-4 text-center'>
 									You are not verified in the PESU Discord server.
 								</h1>
-								{/* <VerifyInputContainer /> */}
-								<NoEntryComponent />
+								<VerifyInputContainer />
 							</div>
 						)}
 					</div>
