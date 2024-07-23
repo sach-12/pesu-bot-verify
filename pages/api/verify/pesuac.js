@@ -69,7 +69,7 @@ const handler = async (req, res) => {
 			const is_verified = await verified.exists({ PRN: response.data.profile.prn });
 			if (is_verified) {
 				return res.status(403).json({
-					message: "PRN already verified with a different user",
+					message: "PRN already verified with a different user. If you think this is a mistake, contact us.",
 				});
 			}
 

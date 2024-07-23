@@ -6,7 +6,7 @@ import { withSessionSsr } from "@/utils/withSession";
 import ReactLoading from "react-loading";
 import axios from "axios";
 
-const Verify = ({ user, token }) => {
+const VerifyWithPesuAc = ({ user, token }) => {
 	const store = useStore();
 	const router = useRouter();
 
@@ -19,237 +19,109 @@ const Verify = ({ user, token }) => {
 			store.setUser(user);
 			store.setToken(token);
 		} else {
-			router.push("/login?returnTo=/verify");
+			router.push("/login?returnTo=/verify/pesuac");
 		}
 
 		setLoading(false);
 	}, [router.isReady]);
 
 	const VerifyInputContainer = () => {
-		const [prn, setPrn] = useState("");
-		const [srn, setSrn] = useState("");
-		const [section, setSection] = useState("");
+		const [username, setUsername] = useState("");
+		const [password, setPassword] = useState("");
+		const [loading, setLoading] = useState(false);
+		const [success, setSuccess] = useState(false);
+		const [error, setError] = useState(null);
+		const [buttoneEnabled, setButtonEnabled] = useState(false);
 
-		const [prnState, setPrnState] = useState(0); // 0: initial, 1: loading, 2: success, -1: error
-		const [prnError, setPrnError] = useState(null);
-		const [secondFieldCollector, setSecondFieldCollector] = useState(null);
-		const [secondFieldState, setSecondFieldState] = useState(0); // 0: initial, 1: loading, 2: success, -1: error
-		const [secondFieldError, setSecondFieldError] = useState(null);
-
-		const handlePrnChange = (prn) => {
-			setPrn(prn.toUpperCase());
-			setSecondFieldCollector(null);
-			setSecondFieldState(0);
-			setSecondFieldError(null);
-			if (prn.length === 0) {
-				setPrnState(0);
-				setPrnError(null);
-			} else if (
-				(prn.length > 0 && prn.length < 13) ||
-				prn.length > 13 ||
-				!prn.startsWith("PES")
-			) {
-				setPrnState(-1);
-				setPrnError("Enter a valid PRN.");
+		useEffect(() => {
+			if (username === "" || password === "") {
+				setButtonEnabled(false);
 			} else {
-				setPrnState(1);
-				setPrnError(null);
-				const url = `/api/info?prn=${prn}`;
-				const headers = {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${store.token.access_token}`,
-				};
-				axios
-					.get(url, { headers })
-					.then((res) => {
-						setPrnState(2);
-						setPrnError(null);
-						setSecondFieldCollector(res.data.requires);
-					})
-					.catch((err) => {
-						setPrnState(-1);
-						setPrnError(err.response.data.message);
-					});
+				setButtonEnabled(true);
 			}
-		};
+		}, [username, password]);
 
-		const handleSrnChange = (srn) => {
-			setSrn(srn.toUpperCase());
-			if (srn.length === 0) {
-				setSecondFieldState(0);
-				setSecondFieldError(null);
-			} else if (
-				(srn.length > 0 && srn.length < 13) ||
-				srn.length > 13 ||
-				!srn.startsWith("PES")
-			) {
-				setSecondFieldState(-1);
-				setSecondFieldError("Enter a valid SRN.");
-			} else {
-				setSecondFieldState(2);
-				setSecondFieldError(null);
-			}
-		};
-
-		const handleSectionChange = (section) => {
-			setSection(section.toUpperCase());
-			if (section.length === 0) {
-				setSecondFieldState(0);
-				setSecondFieldError(null);
-			} else if (section.length > 1) {
-				setSecondFieldState(-1);
-				setSecondFieldError("Enter a valid section.");
-			} else {
-				setSecondFieldState(2);
-				setSecondFieldError(null);
-			}
-		};
-
-		const handleSubmit = () => {
-			if (prnState !== 2) return;
-			if (secondFieldState !== 2) return;
-			setSecondFieldState(1);
-			const url = `/api/verify`;
+		const handleSubmit = async () => {
+			setLoading(true);
+			setError(null);
+			const url = "/api/verify/pesuac";
+			const data = {
+				username,
+				password,
+			};
 			const headers = {
-				"Content-Type": "application/json",
 				Authorization: `Bearer ${store.token.access_token}`,
+				"Content-Type": "application/json",
 			};
-			let data = {
-				PRN: prn,
-			};
-			if (secondFieldCollector === "srn") {
-				data["SRN"] = srn;
-			} else if (secondFieldCollector === "section") {
-				data["Section"] = `Section ${section}`;
+			try {
+				await axios.post(url, JSON.stringify(data), { headers });
+				setSuccess(true);
+				setError(null);
+				setTimeout(() => {
+					router.push("/");
+				}, 3000);
+			} catch (err) {
+				setError(err.response.data.message);
 			}
-			const payload = {
-				data: data,
-			};
-			axios
-				.post(url, payload, { headers })
-				.then((res) => {
-					setSecondFieldState(3);
-					setTimeout(() => {
-						router.push("/");
-					}, 3000);
-				})
-				.catch((err) => {
-					setSecondFieldState(-1);
-					setSecondFieldError(err.response.data.message);
-				});
+			setLoading(false);
 		};
 
 		return (
 			<div className='mb-6 w-4/5 sm:w-3/5 md:w-2/5 mx-auto h-40'>
-				<label
-					htmlFor='prn'
-					className={`block mb-2 w-full text-sm font-medium ${
-						(prnState === 2 && "text-green-500") ||
-						(prnState === -1 && "text-red-500") ||
-						"text-c4"
-					}`}>
-					PRN
+				<div className='text-justify text-c2 text-xl mb-4'>
+					Your PESU Academy username and password are required to verify and link your student and discord accounts.
+					Don't worry, we don't store any information. You can check out the source code{" "}
+					<a
+						href='https://github.com/HackerSpace-PESU/pesu-auth/'
+						target='_blank'
+						className='text-c3 underline'>
+						here
+					</a>
+					.
+				</div>
+				<label htmlFor='username' className='block my-2 w-full text-sm font-medium text-c4'>
+					PESU Academy Login
 				</label>
 				<input
 					type='text'
-					id='prn'
-					className={`outline-none focus-within:bg-neutral-50 border border-${
-						prnState === 2 ? "green-500" : prnState === -1 ? "red-500" : "c2"
-					} placeholder-gray-500 text-sm rounded-sm focus:bg-opacity-90 transition-colors w-full px-3 py-2`}
-					placeholder='PES120190XXXX'
-					value={prn}
-					onChange={(e) => handlePrnChange(e.target.value)}
+					id='username'
+					className='outline-none focus-within:bg-neutral-50 border border-c2 placeholder-gray-500 text-sm rounded-sm focus:bg-opacity-90 transition-colors w-full px-3 py-2'
+					placeholder='Username'
+					value={username}
+					onChange={(e) => setUsername(e.target.value)}
 				/>
-				{prnError && <p className='text-red-500 text-sm mt-1'>{prnError}</p>}
-				{prnState === 1 && (
+				<label htmlFor='password' className='block my-2 w-full text-sm font-medium text-c4'>
+					PESU Academy Password
+				</label>
+				<input
+					type='password'
+					id='password'
+					className='outline-none focus-within:bg-neutral-50 border border-c2 placeholder-gray-500 text-sm rounded-sm focus:bg-opacity-90 transition-colors w-full px-3 py-2'
+					placeholder='Password'
+					value={password}
+					onChange={(e) => setPassword(e.target.value)}
+				/>
+				<button
+					disabled={!buttoneEnabled}
+					className={`w-full px-8 py-3 rounded-sm text-sm font-medium ${
+						buttoneEnabled
+							? "hover:bg-c0 hover:text-c4 bg-c4 text-c0"
+							: "cursor-not-allowed bg-gray-700 text-white"
+					} transition-colors duration-200 shadow-md my-4`}
+					onClick={() => handleSubmit()}>
+					Verify
+				</button>
+				{loading && (
 					<div className='flex justify-center mt-2'>
 						<ReactLoading type='spin' color='#6B7280' height={20} width={20} />
 					</div>
 				)}
-				{secondFieldCollector &&
-					(secondFieldCollector === "srn" ? (
-						<div>
-							<label
-								htmlFor='srn'
-								className={`block mt-4 mb-2 w-full text-sm font-medium ${
-									(secondFieldState === 2 && "text-green-500") ||
-									(secondFieldState === -1 && "text-red-500") ||
-									"text-c4"
-								}`}>
-								SRN
-							</label>
-							<input
-								type='text'
-								id='srn'
-								className={`outline-none focus-within:bg-neutral-50 border border-${
-									secondFieldState === 2
-										? "green-500"
-										: secondFieldState === -1
-										? "red-500"
-										: "c2"
-								} placeholder-gray-500 text-sm rounded-sm focus:bg-opacity-90 transition-colors w-full px-3 py-2`}
-								placeholder='PES1UG19XXXXX'
-								value={srn}
-								onChange={(e) => handleSrnChange(e.target.value)}
-							/>
-							{secondFieldError && (
-								<p className='text-red-500 text-sm mt-1'>{secondFieldError}</p>
-							)}
-						</div>
-					) : (
-						<div>
-							<label
-								htmlFor='section'
-								className={`block mt-4 mb-2 w-full text-sm font-medium ${
-									(secondFieldState === 2 && "text-green-500") ||
-									(secondFieldState === -1 && "text-red-500") ||
-									"text-c4"
-								}`}>
-								Section
-							</label>
-							<input
-								type='text'
-								id='section'
-								className={`outline-none focus-within:bg-neutral-50 border border-${
-									secondFieldState === 2
-										? "green-500"
-										: secondFieldState === -1
-										? "red-500"
-										: "c2"
-								} placeholder-gray-500 text-sm rounded-sm focus:bg-opacity-90 transition-colors w-full px-3 py-2`}
-								placeholder='X'
-								value={section}
-								onChange={(e) => handleSectionChange(e.target.value)}
-							/>
-							{secondFieldError && (
-								<p className='text-red-500 text-sm mt-1'>{secondFieldError}</p>
-							)}
-						</div>
-					))}
-				{secondFieldState === 1 && (
-					<div className='flex justify-center mt-2'>
-						<ReactLoading type='spin' color='#6B7280' height={20} width={20} />
-					</div>
-				)}
-				{secondFieldCollector && (
-					<div className='flex justify-end mt-4'>
-						<button
-							disabled={secondFieldState !== 2}
-							className={`${
-								secondFieldState === 2
-									? `bg-c4 text-c0 hover:bg-c0 hover:text-c4`
-									: `bg-gray-700 text-white cursor-not-allowed`
-							} w-full px-8 py-3 rounded-sm text-sm font-medium  transition-colors duration-200 shadow-md`}
-							onClick={() => handleSubmit()}>
-							Verify
-						</button>
-					</div>
-				)}
-				{secondFieldState === 3 && (
-					<div className='flex justify-center mt-2 text-c4 text-2xl'>
+				{success && (
+					<div className='flex justify-center mt-2 text-c4 text-2xl text-center'>
 						Succesfully verified! Redirecting to dashboard...
 					</div>
 				)}
+				{error && <div className='text-red-500 text-sm text-center'>{error}</div>}
 				<div>
 					<p className='text-lg text-c4 text-center mt-4'>
 						Need help?{" "}
@@ -262,12 +134,15 @@ const Verify = ({ user, token }) => {
 						.
 					</p>
 				</div>
-				<div className='flex justify-center mt-4'>
+				{/* <div className='flex justify-center mt-4'>
 					<button
 						className='bg-c4 w-full text-c0 px-8 py-3 rounded-sm text-sm font-medium hover:bg-c0 hover:text-c4 transition-colors duration-200 shadow-md'
-						onClick={() => router.push("/verify/pesuac")}>
-						Or login with PESU Academy
+						onClick={() => router.push("/verify")}>
+						Or use your PRN and SRN
 					</button>
+				</div> */}
+				<div className='text-center text-sm text-c3 py-4'>
+					Note: This website is not affiliated with PES University or PESU Academy in any way.
 				</div>
 			</div>
 		);
@@ -276,9 +151,10 @@ const Verify = ({ user, token }) => {
 	return (
 		<div>
 			<Head>
-				<title>Verify - PESU Discord</title>
+				<title>Verify with PESU Academy</title>
 			</Head>
-			<div className='flex flex-col items-center h-[80vh] my-auto justify-center'>
+
+			<div className='flex flex-col items-center h-[40vh] my-auto justify-center'>
 				{loading ? (
 					<div>
 						<ReactLoading type='bubbles' color='#BBE1FA' height={100} width={100} />
@@ -359,4 +235,4 @@ export const getServerSideProps = withSessionSsr(async ({ req, res }) => {
 	};
 });
 
-export default Verify;
+export default VerifyWithPesuAc;
