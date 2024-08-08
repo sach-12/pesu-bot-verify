@@ -53,8 +53,8 @@ const Login = ({ user, token }) => {
 			</Head>
 
 			<div className='flex flex-col items-center h-[85vh] my-auto justify-center'>
-				<ReactLoading type='bubbles' color='#BBE1FA' height={100} width={100} />
-				<h1 className='text-4xl text-c4'>Redirecting...</h1>
+				<ReactLoading type='bubbles' color='#808183' height={100} width={100} />
+				<h1 className='text-4xl text-c2'>Redirecting</h1>
 			</div>
 		</div>
 	);

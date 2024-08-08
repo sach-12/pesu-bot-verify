@@ -12,7 +12,7 @@ const Auth = ({ user, token }) => {
 	const router = useRouter();
 
 	const [loading, setLoading] = useState(true);
-	const [text, setText] = useState("Sit tight...");
+	const [text, setText] = useState("Loading");
 	const [errorText, setErrorText] = useState(null);
 
 	useEffect(() => {
@@ -49,16 +49,16 @@ const Auth = ({ user, token }) => {
 		const parsedSession = JSON.parse(decodedSession);
 		// check if session id matches
 		if (parsedSession.sessionId !== state) {
-			setText("You're not supposed to be here...");
+			setText("You're not supposed to be here");
 			setLoading(false);
 			return;
 		} else {
-			setText("Just a sec...");
+			setText("Just a sec");
 			const tokenUrl = `/api/token?code=${code}`;
 			axios
 				.get(tokenUrl)
 				.then((res) => {
-					setText("Almost there...");
+					setText("Almost there");
 					const token = res.data.data;
 					store.setToken(token);
 					const userUrl = "/api/user";
@@ -68,7 +68,7 @@ const Auth = ({ user, token }) => {
 					axios
 						.get(userUrl, { headers })
 						.then((res) => {
-							setText("Redirecting you...");
+							setText("Redirecting you");
 							const user = res.data.data;
 							store.setUser(user);
 							persistentStore.setSession(null);
@@ -100,11 +100,11 @@ const Auth = ({ user, token }) => {
 
 			<div className='flex flex-col items-center text-center h-[85vh] my-auto justify-center'>
 				{loading && (
-					<ReactLoading type='bubbles' color='#BBE1FA' height={100} width={100} />
+					<ReactLoading type='bubbles' color='#808183' height={100} width={100} />
 				)}
-				<h1 className='text-4xl text-c4'>{text}</h1>
+				<h1 className='text-4xl text-c2'>{text}</h1>
 				{errorText && (
-					<div className='text-c4 text-2xl m-4'>
+					<div className='text-2xl m-4'>
 						<span className='text-red-500'>{errorText}</span>
 					</div>
 				)}

@@ -19,7 +19,7 @@ const VerifyWithPesuAc = ({ user, token }) => {
 			store.setUser(user);
 			store.setToken(token);
 		} else {
-			router.push("/login?returnTo=/verify/pesuac");
+			router.push("/login?returnTo=/verify");
 		}
 
 		setLoading(false);
@@ -31,7 +31,7 @@ const VerifyWithPesuAc = ({ user, token }) => {
 		const [loading, setLoading] = useState(false);
 		const [success, setSuccess] = useState(false);
 		const [error, setError] = useState(null);
-		const [buttoneEnabled, setButtonEnabled] = useState(false);
+		const [buttonEnabled, setButtonEnabled] = useState(false);
 
 		useEffect(() => {
 			if (username === "" || password === "") {
@@ -41,7 +41,10 @@ const VerifyWithPesuAc = ({ user, token }) => {
 			}
 		}, [username, password]);
 
-		const handleSubmit = async () => {
+		const handleSubmit = async (e) => {
+			e.preventDefault();
+			e.stopPropagation();
+			if (!buttonEnabled) return;
 			setLoading(true);
 			setError(null);
 			const url = "/api/verify/pesuac";
@@ -67,82 +70,85 @@ const VerifyWithPesuAc = ({ user, token }) => {
 		};
 
 		return (
-			<div className='mb-6 w-4/5 sm:w-3/5 md:w-2/5 mx-auto h-40'>
-				<div className='text-justify text-c2 text-xl mb-4'>
+			<div className='flex flex-col items-center justify-center'>
+				<div className='text-justify text-c2 text-xl w-full md:w-2/3 pb-4'>
 					Your PESU Academy username and password are required to verify and link your student and discord accounts.
 					Don't worry, we don't store any information. You can check out the source code{" "}
 					<a
 						href='https://github.com/HackerSpace-PESU/pesu-auth/'
 						target='_blank'
-						className='text-c3 underline'>
-						here
+						className='inline-flex justify-center gap-1 leading-4 hover:underline'>
+						<span>
+							here
+						</span>
+						<svg aria-hidden="true" height="7" viewBox="0 0 6 6" width="7" class="opacity-70"><path d="M1.25215 5.54731L0.622742 4.9179L3.78169 1.75597H1.3834L1.38936 0.890915H5.27615V4.78069H4.40513L4.41109 2.38538L1.25215 5.54731Z" fill="currentColor"></path></svg>
 					</a>
 					.
 				</div>
-				<label htmlFor='username' className='block my-2 w-full text-sm font-medium text-c4'>
-					PESU Academy Login
-				</label>
-				<input
-					type='text'
-					id='username'
-					className='outline-none focus-within:bg-neutral-50 border border-c2 placeholder-gray-500 text-sm rounded-sm focus:bg-opacity-90 transition-colors w-full px-3 py-2'
-					placeholder='Username'
-					value={username}
-					onChange={(e) => setUsername(e.target.value)}
-				/>
-				<label htmlFor='password' className='block my-2 w-full text-sm font-medium text-c4'>
-					PESU Academy Password
-				</label>
-				<input
-					type='password'
-					id='password'
-					className='outline-none focus-within:bg-neutral-50 border border-c2 placeholder-gray-500 text-sm rounded-sm focus:bg-opacity-90 transition-colors w-full px-3 py-2'
-					placeholder='Password'
-					value={password}
-					onChange={(e) => setPassword(e.target.value)}
-				/>
-				<button
-					disabled={!buttoneEnabled}
-					className={`w-full px-8 py-3 rounded-sm text-sm font-medium ${
-						buttoneEnabled
-							? "hover:bg-c0 hover:text-c4 bg-c4 text-c0"
-							: "cursor-not-allowed bg-gray-700 text-white"
-					} transition-colors duration-200 shadow-md my-4`}
-					onClick={() => handleSubmit()}>
-					Verify
-				</button>
+				<form className="w-2/3 lg:w-1/2 xl:w-1/3 flex flex-col gap-2">
+					<label htmlFor='username' className='flex text-c2 text-sm font-medium'>
+						PESU Academy Login
+					</label>
+					<input
+						type='text'
+						id='username'
+						className='p-2 rounded-md text-white bg-c0 border border-white/15 placeholder-c2/50 text-sm focus:outline-none'
+						placeholder='Username'
+						value={username}
+						onChange={(e) => setUsername(e.target.value)}
+						onKeyUp={(e) => e.key === "Enter" && handleSubmit(e)}
+					/>
+					<label htmlFor='password' className='flex text-c2 text-sm font-medium'>
+						PESU Academy Password
+					</label>
+					<input
+						type='password'
+						id='password'
+						className='p-2 rounded-md text-white bg-c0 border border-white/15 placeholder-c2/50 text-sm focus:outline-none'
+						placeholder='Password'
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+						onKeyUp={(e) => e.key === "Enter" && handleSubmit(e)}
+					/>
+					<button
+						disabled={!buttonEnabled}
+						className={`h-9 px-4 py-2 my-1 w-full flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors
+							focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border
+							bg-c1 text-white border-c2 cursor-pointer
+							hover:bg-white hover:text-c0
+							disabled:bg-c1 disabled:text-c2 disabled:cursor-not-allowed`}
+						onClick={(e) => handleSubmit(e)}>
+						Verify
+					</button>
+				</form>
 				{loading && (
 					<div className='flex justify-center mt-2'>
-						<ReactLoading type='spin' color='#6B7280' height={20} width={20} />
+						<ReactLoading type='spin' color='#808183' height={20} width={20} />
 					</div>
 				)}
 				{success && (
-					<div className='flex justify-center mt-2 text-c4 text-2xl text-center'>
+					<div className='flex justify-center mt-2 text-md text-white text-center'>
 						Succesfully verified! Redirecting to dashboard...
 					</div>
 				)}
-				{error && <div className='text-red-500 text-sm text-center'>{error}</div>}
+				{error && <div className='text-red-500/90 text-sm text-center'>{error}</div>}
 				<div>
-					<p className='text-lg text-c4 text-center mt-4'>
+					<p className='text-c2 text-md text-center'>
 						Need help?{" "}
 						<a
 							href='https://discord.com/channels/742797665301168220/742956204753551440'
 							target='_blank'
-							className='text-c3 underline'>
-							Drop a message here
+							className='inline-flex justify-center gap-1 leading-4 hover:underline'>
+							<span>
+								Drop a message here
+							</span>
+							<svg aria-hidden="true" height="7" viewBox="0 0 6 6" width="7" class="opacity-70"><path d="M1.25215 5.54731L0.622742 4.9179L3.78169 1.75597H1.3834L1.38936 0.890915H5.27615V4.78069H4.40513L4.41109 2.38538L1.25215 5.54731Z" fill="currentColor"></path></svg>
 						</a>
 						.
 					</p>
 				</div>
-				{/* <div className='flex justify-center mt-4'>
-					<button
-						className='bg-c4 w-full text-c0 px-8 py-3 rounded-sm text-sm font-medium hover:bg-c0 hover:text-c4 transition-colors duration-200 shadow-md'
-						onClick={() => router.push("/verify")}>
-						Or use your PRN and SRN
-					</button>
-				</div> */}
-				<div className='text-center text-sm text-c3 py-4'>
-					Note: This website is not affiliated with PES University or PESU Academy in any way.
+				<div className='text-c2 text-center text-xs w-1/2 pt-2'>
+					Note: This website is not affiliated with PES University or PESU Academy in any way. This is an independent and unofficial project by the PESU Discord community.
 				</div>
 			</div>
 		);
@@ -154,33 +160,33 @@ const VerifyWithPesuAc = ({ user, token }) => {
 				<title>Verify with PESU Academy</title>
 			</Head>
 
-			<div className='flex flex-col items-center h-[40vh] my-auto justify-center'>
+			<div className='flex flex-col justify-center items-center mt-8 sm:mt-28 lg:mt-40'>
 				{loading ? (
 					<div>
-						<ReactLoading type='bubbles' color='#BBE1FA' height={100} width={100} />
-						<h1 className='text-4xl text-c4'>Loading...</h1>
+						<ReactLoading type='bubbles' color='#808183' height={100} width={100} />
+						<h1 className='text-4xl text-c2'>Loading</h1>
 					</div>
 				) : (
-					<div>
-						{!store.user.guild_info.in_guild ? (
-							<div className='flex flex-col items-center text-center'>
-								<h1 className='text-4xl text-c4 p-4'>
+					<div className="mx-4 sm:mx-20 md:mx-28 lg:mx-40 xl:mx-52 flex flex-col items-center justify-center text-center border bg-c0 gap-4 rounded-lg border-white/15 p-8">
+						{!store.user?.guild_info.in_guild ? (
+							<>
+								<h1 className='text-3xl text-white font-semibold px-4'>
 									Oh no! You are not in the PESU Discord server.
 								</h1>
 								<button
-									className='bg-c4 text-c1 px-6 py-2 rounded-sm text-md hover:bg-c1 hover:text-c4 transition-all duration-200 ease-in-out'
+									className='whitespace-nowrap rounded-md text-sm text-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border border-c2 bg-c1 shadow-sm hover:bg-white hover:text-c0 h-9 px-4 py-2'
 									onClick={() => router.push("https://discord.gg/eZ3uFs2")}>
-									Join
+									Join the Server
 								</button>
-							</div>
-						) : store.user.guild_info.is_verified ? (
-							<div>
-								<h1 className='text-4xl text-c4 p-4 text-center'>
+							</>
+						) : store.user?.guild_info.is_verified ? (
+							<>
+								<h1 className='text-3xl text-white font-semibold px-4'>
 									Looks like you're already verified.
 								</h1>
-								<div className='flex flex-row p-4 justify-center'>
+								<div className='flex flex-row p-4 justify-center space-x-4'>
 									<button
-										className='bg-c4 text-c1 px-6 py-2 mx-4 rounded-sm text-md hover:bg-c1 hover:text-c4 transition-all duration-200 ease-in-out'
+										className='whitespace-nowrap rounded-md text-sm text-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border border-c2 bg-c1 shadow-sm hover:bg-white hover:text-c0 h-9 px-4 py-2'
 										onClick={() =>
 											router.push(
 												"https://discord.com/channels/742797665301168220/860224115633160203"
@@ -189,19 +195,19 @@ const VerifyWithPesuAc = ({ user, token }) => {
 										Open Discord
 									</button>
 									<button
-										className='bg-c4 text-c1 px-6 py-2 mx-4 rounded-sm text-md hover:bg-c1 hover:text-c4 transition-all duration-200 ease-in-out'
+										className='whitespace-nowrap rounded-md text-sm text-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border border-c2 bg-c1 shadow-sm hover:bg-white hover:text-c0 h-9 px-4 py-2'
 										onClick={() => router.push("/")}>
 										Home
 									</button>
 								</div>
-							</div>
+							</>
 						) : (
-							<div>
-								<h1 className='text-4xl text-c4 p-4 text-center'>
+							<>
+								<h1 className='text-3xl text-white font-semibold p-4'>
 									You are not verified in the PESU Discord server.
 								</h1>
 								<VerifyInputContainer />
-							</div>
+							</>
 						)}
 					</div>
 				)}

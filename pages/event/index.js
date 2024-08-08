@@ -25,11 +25,11 @@ const Event = ({ user, token }) => {
 	return (
 		<div>
 			<Head>
-				<title>Post Event - PESU Discord</title>
+				<title>Post an Event - PESU Discord</title>
 			</Head>
 
 			<div className='flex flex-col items-center text-center h-[85vh] my-auto justify-center'>
-				<h1 className='text-4xl text-c4'>Coming soon...</h1>
+				<h1 className='text-4xl text-c2'>Coming soon</h1>
 			</div>
 		</div>
 	);

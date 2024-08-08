@@ -260,7 +260,7 @@ Welcome to our humble little server, where the verification process is more rigo
 
 Now, let's get to the good stuff - ⁠<#860224115633160203> . This is where all the cool kids hang out. Or at least, that's what we tell ourselves as we cry ourselves to sleep every night. But hey, at least we have each other, right? If you're feeling brave, you can also check out <#778823213345538068> and see if you're worthy of some extra roles and exclusive private channels.
 
-And if you ever find yourself hopelessly lost and confused, don't worry. Our online \`${adminRoleName}\` or \`${modRoleName}\` are here to help... or at least, they'll try to help. No promises on the quality of their assistance though - they're not exactly successful JEE aspirants,.
+And if you ever find yourself hopelessly lost and confused, don't worry. Our online \`${adminRoleName}\` or \`${modRoleName}\` are here to help... or at least, they'll try to help. No promises on the quality of their assistance though - they're not exactly successful JEE aspirants.
 
 **Roles added: ${branch}, ${campus} and ${year}. If any of these details are inaccurate or have changed, drop a message in <#860224115633160203> and ping the \`${adminRoleName}\` or any \`${modRoleName}\`.**
 

@@ -30,49 +30,53 @@ const Home = ({ user, token }) => {
 			</Head>
 			{loading ? (
 				<div className='flex flex-col items-center h-[85vh] my-auto justify-center'>
-					<ReactLoading type='bubbles' color='#BBE1FA' height={100} width={100} />
-					<h1 className='text-4xl text-c4 ml-10'>Sit tight...</h1>
+					<ReactLoading type='bubbles' color='#808183' height={100} width={100} />
+					<h1 className='text-4xl text-c2 ml-10'>Loading</h1>
 				</div>
 			) : store.user ? (
-				<div className='flex flex-col items-center h-[85vh] my-auto justify-center'>
-					<h1 className='text-4xl text-c4'>Hey there, {store.user.global_name}!</h1>
-					<div className='flex flex-row'>
-						{!store.user.guild_info.in_guild && (
-							<button
-								onClick={() => router.push("https://discord.gg/eZ3uFs2")}
-								className='bg-c0 text-c4 rounded-sm px-4 py-2 m-2'>
-								Join the PESU Discord Server
-							</button>
-						)}
-						{/* {store.user.guild_info.is_verified && (
-							<button
-								onClick={() => router.push("/event")}
-								className='bg-c0 text-c4 rounded-sm px-4 py-2 m-2'>
-								Post Event
-							</button>
-						)} */}
-						{!store.user.guild_info.is_verified && (
-							<button
-								onClick={() => router.push("/verify")}
-								className='bg-c0 text-c4 rounded-sm px-4 py-2 m-2'>
-								Verify yourself
-							</button>
-						)}
+				<div className='h-[85vh] flex flex-col justify-center items-center'>
+					<div className="w-fit flex flex-col items-center justify-center bg-c0 gap-4 rounded-lg border border-white/15 p-8">
+						<h1 className='text-4xl font-medium text-white'>Hey there, {store.user?.global_name}!</h1>
+						<div className='flex flex-row'>
+							{!store.user?.guild_info.in_guild && (
+								<button
+									onClick={() => router.push("https://discord.gg/eZ3uFs2")}
+									className='bg-c1 text-white rounded-lg px-4 py-2 m-2 transition-colors hover:bg-white hover:text-c0'>
+									Join the PESU Discord Server
+								</button>
+							)}
+							{store.user?.guild_info.is_verified && (
+								<button
+									onClick={() => router.push("/event")}
+									className='bg-c1 text-white rounded-lg px-4 py-2 m-2 transition-colors hover:bg-white hover:text-c0'>
+									Post an Event
+								</button>
+							)}
+							{!store.user?.guild_info.is_verified && (
+								<button
+									onClick={() => router.push("/verify")}
+									className='bg-c1 text-white rounded-lg px-4 py-2 m-2 transition-colors hover:bg-white hover:text-c0'>
+									Verify yourself
+								</button>
+							)}
+						</div>
 					</div>
 				</div>
 			) : (
-				<div className='flex flex-col items-center h-[85vh] my-auto justify-center'>
-					<h1 className='text-4xl text-c4 text-center tracking-wider'>
-						Welcome to PESU Discord
-					</h1>
-					<button
-						className='bg-c0 text-c4 text-xl rounded-sm px-4 py-2 m-4'
-						onClick={() => {
-							router.push("/login?returnTo=/");
-						}}>
-						<img src={discordIcon.src} alt='' className='h-6 w-6 inline-block' />
-						<span className='ml-2'>Login with Discord</span>
-					</button>
+				<div className='flex flex-col items-center h-[85vh] my-auto justify-center mx-4'>
+					<div className="w-fit flex flex-col items-center justify-center bg-c0 gap-4 rounded-lg border border-white/15 p-8">
+						<h1 className='text-4xl text-white text-center tracking-wider'>
+							Welcome to PESU Discord
+						</h1>
+						<button
+							className='bg-c1 text-c2 rounded-lg px-4 py-2 m-2 transition-colors hover:bg-white hover:text-c0'
+							onClick={() => {
+								router.push("/login?returnTo=/");
+							}}>
+							<img src={discordIcon.src} alt='' className='h-6 w-6 inline-block' />
+							<span className='ml-2'>Login with Discord</span>
+						</button>
+					</div>
 				</div>
 			)}
 		</div>

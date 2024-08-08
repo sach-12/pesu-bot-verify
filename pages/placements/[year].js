@@ -26,7 +26,7 @@ const Placement = ({ user, token }) => {
 		}
 
         if (data[router.query.year]) {
-            router.push(data[router.query.year]);
+            window.location.replace(data[router.query.year]);
         } else {
 			setLoading(false);
 		}
@@ -40,12 +40,12 @@ const Placement = ({ user, token }) => {
             
             {loading ? (
                 <div className='flex flex-col items-center h-[85vh] my-auto justify-center'>
-                    <ReactLoading type='bubbles' color='#BBE1FA' height={100} width={100} />
-                    <h1 className='text-4xl text-c4 ml-10'>Sit tight...</h1>
+                    <ReactLoading type='bubbles' color='#808183' height={100} width={100} />
+                    <h1 className='text-4xl text-c2'>Loading</h1>
                 </div>
             ) : (
                 <div className='flex flex-col items-center h-[85vh] my-auto justify-center'>
-                    <h1 className='text-4xl text-c4'>Data not available for {router.query.year}</h1>
+                    <h1 className='text-4xl text-white'>Data not available for {router.query.year}</h1>
                 </div>
             )}
         </div>

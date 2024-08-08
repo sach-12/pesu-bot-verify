@@ -10,11 +10,22 @@ const Navbar = () => {
 
 	const [open, setOpen] = useState(false);
 	const [loading, setLoading] = useState(true);
+	const outerRef = useRef();
 
 	useEffect(() => {
 		if (store.user === undefined) return;
 		setLoading(false);
 	}, [store]);
+
+	const handleClickOutsideOuterRef = (e) => {
+		if (outerRef.current && !outerRef.current.contains(e.target)) {
+			setOpen(false);
+		}
+	};
+	useEffect(() => {
+		document.addEventListener("mousedown", handleClickOutsideOuterRef);
+		return () => document.removeEventListener("mousedown", handleClickOutsideOuterRef);
+	}, []);
 
 	const logout = async () => {
 		const url = "/api/logout";
@@ -31,12 +42,12 @@ const Navbar = () => {
 		}
 	};
 
-	const SideNav = () => {
+	const SideNav = ({ref}) => {
 		return (
-			<div className='flex flex-col justify-start px-5 bg-c2 h-full'>
+			<div className='flex flex-col justify-start px-5 bg-c0 h-full space-y-4' ref={ref}>
 				<button
 					onClick={() => setOpen(false)}
-					className='flex flex-row items-center justify-between'>
+					className='flex flex-row items-center'>
 					<img
 						src={menu.src}
 						alt='MENU'
@@ -44,7 +55,7 @@ const Navbar = () => {
 						width={60}
 						height={60}
 					/>
-					<span className='text-3xl sm:text-4xl text-c0 font-bold w-full'>MENU</span>
+					<span className='text-3xl sm:text-4xl text-white/85 font-bold w-full'>MENU</span>
 				</button>
 
 				<button
@@ -52,7 +63,7 @@ const Navbar = () => {
 						router.push("/");
 						setOpen(false);
 					}}
-					className='inline-block self-center text-2xl sm:text-3xl text-c4 text-opacity-80 tracking-wide no-underline p-6 rounded-sm border-2 border-c1 bg-c1 w-full text-center my-4 hover:text-c1 hover:bg-c3 transition-all duration-300'>
+					className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-xl text-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border border-c2 bg-c1 shadow-sm hover:bg-white hover:text-c0 h-12">
 					Home
 				</button>
 				<button
@@ -60,7 +71,7 @@ const Navbar = () => {
 						router.push("/placements");
 						setOpen(false);
 					}}
-					className='inline-block self-center text-2xl sm:text-3xl text-c4 text-opacity-80 tracking-wide no-underline p-6 rounded-sm border-2 border-c1 bg-c1 w-full text-center my-4 hover:text-c1 hover:bg-c3 transition-all duration-300'>
+					className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-xl text-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border border-c2 bg-c1 shadow-sm hover:bg-white hover:text-c0 h-12">
 					Placements Data
 				</button>
 				{!store.user ? (
@@ -69,39 +80,39 @@ const Navbar = () => {
 							router.push("/login?returnTo=/");
 							setOpen(false);
 						}}
-						className='inline-block self-center text-2xl sm:text-3xl text-c4 text-opacity-80 tracking-wide no-underline p-6 rounded-sm border-2 border-c1 bg-c1 w-full text-center my-4 hover:text-c1 hover:bg-c3 transition-all duration-300'>
+						className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-xl text-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border border-c2 bg-c1 shadow-sm hover:bg-white hover:text-c0 h-12">
 						Login
 					</button>
 				) : (
-					<div>
-						{!store.user.guild_info.in_guild && (
+					<>
+						{!store.user?.guild_info.in_guild && (
 							<button
 								onClick={() => {
 									router.push("https://discord.gg/eZ3uFs2");
 									setOpen(false);
 								}}
-								className='inline-block self-center text-2xl sm:text-3xl text-c4 text-opacity-80 tracking-wide no-underline p-6 rounded-sm border-2 border-c1 bg-c1 w-full text-center my-4 hover:text-c1 hover:bg-c3 transition-all duration-300'>
+								className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-xl text-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border border-c2 bg-c1 shadow-sm hover:bg-white hover:text-c0 h-12">
 								Join PESU Discord
 							</button>
 						)}
 
-						{/* {store.user.guild_info.is_verified && (
+						{store.user?.guild_info.is_verified && (
 							<button
 								onClick={() => {
 									router.push("/event")
 									setOpen(false)
 								}}
-								className='inline-block self-center text-2xl sm:text-3xl text-c4 text-opacity-80 tracking-wide no-underline p-6 rounded-sm border-2 border-c1 bg-c1 w-full text-center my-4 hover:text-c1 hover:bg-c3 transition-all duration-300'>
-								Post Event
+								className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-xl text-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border border-c2 bg-c1 shadow-sm hover:bg-white hover:text-c0 h-12">
+								Post an Event
 							</button>
-						)} */}
-						{!store.user.guild_info.is_verified && (
+						)}
+						{!store.user?.guild_info.is_verified && (
 							<button
 								onClick={() => {
 									router.push("/verify");
 									setOpen(false);
 								}}
-								className='inline-block self-center text-2xl sm:text-3xl text-c4 text-opacity-80 tracking-wide no-underline p-6 rounded-sm border-2 border-c1 bg-c1 w-full text-center my-4 hover:text-c1 hover:bg-c3 transition-all duration-300'>
+								className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-xl text-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border border-c2 bg-c1 shadow-sm hover:bg-white hover:text-c0 h-12">
 								Verify
 							</button>
 						)}
@@ -110,10 +121,10 @@ const Navbar = () => {
 								logout();
 								setOpen(false);
 							}}
-							className='inline-block self-center text-2xl sm:text-3xl text-c4 text-opacity-80 tracking-wide no-underline p-6 rounded-sm border-2 border-c1 bg-c1 w-full text-center my-4 hover:text-c1 hover:bg-c3 transition-all duration-300'>
+							className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-xl text-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border border-c2 bg-c1 shadow-sm hover:bg-white hover:text-c0 h-12">
 							Logout
 						</button>
-					</div>
+					</>
 				)}
 			</div>
 		);
@@ -125,7 +136,7 @@ const Navbar = () => {
 		const ref = useRef();
 
 		const handleClickOutside = (e) => {
-			if (!ref.current.contains(e.target)) {
+			if (ref.current && !ref.current.contains(e.target)) {
 				setOpen(false);
 			}
 		};
@@ -146,20 +157,19 @@ const Navbar = () => {
 		}, []);
 
 		return (
-			<div className='inline-flex h-12 my-auto rounded-sm'>
+			<div className='inline-flex h-10 my-auto rounded-sm'>
 				<div className='relative' ref={ref}>
 					{store.user ? (
 						<button
 							type='button'
 							onClick={() => setOpen(!open)}
-							className='inline-flex items-center justify-center h-full px-2 text-lg tracking-wide bg-c4 border border-c4 text-c0 hover:text-c4 hover:bg-c0 transition-all duration-200 ease-in-out'>
+							className='inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm text-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border border-c2 bg-c0 shadow-sm hover:bg-white hover:text-c0 h-10 px-4 py-2'>
 							<img
-								src={`https://cdn.discordapp.com/avatars/${store.user.id}/${store.user.avatar}`}
+								src={`https://cdn.discordapp.com/avatars/${store.user?.id}/${store.user?.avatar}`}
 								alt='Avatar'
 								className='w-8 h-8 mr-2 rounded-full'
 							/>
-							{store.user.username}
-							{store.user.discriminator !== "0" && "#" + store.user.discriminator}
+							{store.user?.username}
 							<svg
 								xmlns='http://www.w3.org/2000/svg'
 								className={arrClasses}
@@ -175,70 +185,66 @@ const Navbar = () => {
 							</svg>
 						</button>
 					) : (
-						<>
+						<div className="flex items-center justify-end space-x-2">
 							<button
 								type='button'
 								onClick={() => router.push("/login?returnTo=/")}
-								className='h-full px-8 text-lg tracking-wide mx-2 bg-c4 border border-c4 text-c1 hover:text-c4 hover:bg-c0 hover:border-c4 transition-all duration-200 ease-in-out'>
+								className='inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm text-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border border-c2 bg-c0 shadow-sm hover:bg-white hover:text-c0 h-9 px-4 py-2'>
 								Login
 							</button>
 							<button
 								type='button'
 								onClick={() => router.push("/placements")}
-								className='h-full px-8 text-lg mx-2 tracking-wide bg-c4 border border-c4 text-c1 hover:text-c4 hover:bg-c0 hover:border-c4 transition-all duration-200 ease-in-out'>
+								className='inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm text-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border border-c2 bg-c0 shadow-sm hover:bg-white hover:text-c0 h-9 px-4 py-2'>
 								Placements Data
 							</button>
-						</>
+						</div>
 					)}
 
 					{open && (
-						<div className='absolute right-0 z-10 w-44 mt-4 origin-top-right bg-c4 shadow-lg'>
-							<div className='p-2'>
-								{!store.user.guild_info.in_guild && (
+						<div className='absolute right-0 z-10 w-48 mt-4 origin-top-right bg-c0 shadow-lg rounded-md'>
+							<div className='p-4 flex flex-col space-y-2'>
+								{!store.user?.guild_info.in_guild && (
 									<div>
 										<button
 											onClick={() => {
 												router.push("https://discord.gg/eZ3uFs2");
 											}}
-											className='block w-full px-4 py-2 text-center bg-c4 border border-c4 text-c0 rounded-sm hover:bg-c3 hover:text-c4 transition-all duration-75 ease-in-out'>
+											className="w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm text-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border border-c2 bg-c1 shadow-sm hover:bg-white hover:text-c0 h-9 px-4 py-2">
 											Join PESU Discord
 										</button>
-										<hr className='my-2 border-c0' />
 									</div>
 								)}
-								{/* {store.user.guild_info.is_verified && (
+								{store.user?.guild_info.is_verified && (
 									<div>
 										<button
 											onClick={() => {
 												router.push("/event");
 											}}
-											className='block w-full px-4 py-2 text-center bg-c4 border border-c4 text-c0 rounded-sm hover:bg-c3 hover:text-c4 transition-all duration-75 ease-in-out'>
-											Post Event
+											className="w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm text-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border border-c2 bg-c1 shadow-sm hover:bg-white hover:text-c0 h-9 px-4 py-2">
+											Post an Event
 										</button>
-										<hr className='my-2 border-c0' />
 									</div>
-								)} */}
-								{!store.user.guild_info.is_verified && (
+								)}
+								{!store.user?.guild_info.is_verified && (
 									<div>
 										<button
 											onClick={() => {
 												router.push("/verify");
 											}}
-											className='block w-full px-4 py-2 text-center bg-c4 border border-c4 text-c0 rounded-sm hover:bg-c3 hover:text-c4 transition-all duration-75 ease-in-out'>
+											className="w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm text-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border border-c2 bg-c1 shadow-sm hover:bg-white hover:text-c0 h-9 px-4 py-2">
 											Verify
 										</button>
-										<hr className='my-2 border-c0' />
 									</div>
 								)}
 								<button
 									onClick={() => router.push("/placements")}
-									className='block w-full px-4 py-2 text-center bg-c4 border border-c4 text-c0 rounded-sm hover:bg-c3 hover:text-c4 transition-all duration-75 ease-in-out'>
+									className="w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm text-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border border-c2 bg-c1 shadow-sm hover:bg-white hover:text-c0 h-9 px-4 py-2">
 									Placements Data
 								</button>
-								<hr className='my-2 border-c0' />
 								<button
 									onClick={() => logout()}
-									className='block w-full px-4 py-2 text-center bg-c4 border border-c4 text-c0 rounded-sm hover:bg-c3 hover:text-c4 transition-all duration-75 ease-in-out'>
+									className="w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm text-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border border-c2 bg-c1 shadow-sm hover:bg-white hover:text-c0 h-9 px-4 py-2">
 									Logout
 								</button>
 							</div>
@@ -250,21 +256,22 @@ const Navbar = () => {
 	};
 
 	return (
-		<nav className='w-full bg-c0 mx-auto justify-between px-5 sm:px-10 md:px-20 shadow-c1 shadow-md'>
+		<nav className='w-full bg-gradient-to-b from-c0/10 via-c0/50 to-c0/80 bg-c1 border-b border-white/5 justify-between px-5 sm:px-10 md:px-20'>
+			{/* Mobile view */}
 			<div className='flex flex-row justify-between items-center md:hidden'>
 				<div
-					className={`fixed top-0 left-0 w-4/5 h-full bg-c1 z-10 ${
+					className={`fixed top-0 left-0 w-4/5 h-full z-10 ${
 						open ? "translate-x-0" : "-translate-x-full"
-					} ease-in-out duration-200`}>
+					} ease-in-out duration-200`} ref={outerRef}>
 					<SideNav />
 				</div>
 				<button
 					onClick={() => setOpen(!open)}
-					className='inline-flex items-center text-sm rounded-lg focus:outline-none focus:ring-2'>
+					className='inline-flex items-center text-sm rounded-lg focus:outline-none'>
 					<img
 						src={menu.src}
 						alt='MENU'
-						className='py-6 px-3 stroke-current text-c4'
+						className='py-6 px-3 stroke-current text-white'
 						width={60}
 						height={60}
 					/>
@@ -272,22 +279,27 @@ const Navbar = () => {
 
 				<button
 					onClick={() => router.push("/")}
-					className='flex items-center py-6 px-3 text-c4 text-2xl sm:text-3xl font-bold m-auto'>
+					className='flex items-center py-6 px-3 text-white text-2xl sm:text-3xl font-extrabold m-auto'>
 					<span>PESU Discord</span>
 				</button>
 				{store.user && (
-					<img
-						src={`https://cdn.discordapp.com/avatars/${store.user.id}/${store.user.avatar}`}
-						alt='Avatar'
-						className='w-8 h-8 mr-2 rounded-full'
-					/>
+					<button
+						onClick={() => setOpen(!open)}
+						className='inline-flex items-center text-sm rounded-lg focus:outline-none'>
+						<img
+							src={`https://cdn.discordapp.com/avatars/${store.user?.id}/${store.user?.avatar}`}
+							alt='Avatar'
+							className='w-8 h-8 mr-2 rounded-full'
+						/>
+					</button>
 				)}
 			</div>
 
+			{/* Desktop view */}
 			<div className='hidden md:flex flex-row justify-between'>
 				<button
 					onClick={() => router.push("/")}
-					className='flex items-center py-5 px-3 text-c4 text-4xl font-bold tracking-wide'>
+					className='flex items-center py-4 px-1 text-white text-3xl font-extrabold tracking-wide'>
 					<span>PESU Discord</span>
 				</button>
 				{!loading && <TopNav />}
