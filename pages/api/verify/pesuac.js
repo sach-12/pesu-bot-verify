@@ -50,6 +50,7 @@ const handler = async (req, res) => {
 		username,
 		password,
 		profile: true,
+		know_your_class_and_section: true,
 	};
 	const headers = {
 		"Content-Type": "application/json",
