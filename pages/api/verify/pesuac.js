@@ -77,8 +77,8 @@ const handler = async (req, res) => {
 			// create batch details if not exists
 			var batchDetails = await batch.findOne({ PRN: response.data.profile.prn });
 			if (!batchDetails) {
-				if (response.data.know_your_class_and_section.branch && response.data.know_your_class_and_section.branch !== "NA") {
-					branch = response.data.know_your_class_and_section.branch;
+				if (response.data.know_your_class_and_section?.branch && response.data.know_your_class_and_section?.branch !== "NA") {
+					branch = response.data.know_your_class_and_section?.branch;
 				} else if (response.data.profile.branch_short_code && response.data.profile.branch_short_code !== "NA") {
 					branch = response.data.profile.branch_short_code;
 				} else {
@@ -87,10 +87,10 @@ const handler = async (req, res) => {
 					});
 				}
 				if (
-					response.data.know_your_class_and_section.department &&
-					response.data.know_your_class_and_section.department.includes("Campus")
+					response.data.know_your_class_and_section?.department &&
+					response.data.know_your_class_and_section?.department.includes("Campus")
 				) {
-					campus = response.data.know_your_class_and_section.department.includes(
+					campus = response.data.know_your_class_and_section?.department.includes(
 						"Electronic"
 					)
 						? "EC"
