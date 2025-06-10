@@ -103,20 +103,20 @@ const handler = async (req, res) => {
 					PRN: response.data.profile.prn,
 					SRN:
 						response.data.profile.srn ||
-						response.data.know_your_class_and_section.srn ||
+						response.data.know_your_class_and_section?.srn ||
 						"NA",
 					Semester:
 						response.data.profile.section ||
-						response.data.know_your_class_and_section.class ||
+						response.data.know_your_class_and_section?.class ||
 						"NA",
 					Section:
 						response.data.profile.section ||
-						response.data.know_your_class_and_section.section ||
+						response.data.know_your_class_and_section?.section ||
 						"NA",
-					Cycle: response.data.know_your_class_and_section.cycle || "NA",
-					CandB: response.data.know_your_class_and_section.department || "NA",
-					Branch: response.data.know_your_class_and_section.branch || "NA",
-					Campus: response.data.know_your_class_and_section.institute_name || "NA",
+					Cycle: response.data.know_your_class_and_section?.cycle || "NA",
+					CandB: response.data.know_your_class_and_section?.department || "NA",
+					Branch: response.data.know_your_class_and_section?.branch || "NA",
+					Campus: response.data.know_your_class_and_section?.institute_name || "NA",
 				});
 				await newBatchDetails.save();
 				batchDetails = newBatchDetails;
