@@ -118,7 +118,7 @@ const handler = async (req, res) => {
 					Branch: response.data.know_your_class_and_section?.branch || "NA",
 					Campus: response.data.know_your_class_and_section?.institute_name || "NA",
 				});
-				await newBatchDetails.save();
+				// await newBatchDetails.save(); // Hotfix for current auth issues
 				batchDetails = newBatchDetails;
 			} else {
 				branch = batchDetails.Branch;
