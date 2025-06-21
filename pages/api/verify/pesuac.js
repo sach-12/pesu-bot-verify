@@ -98,6 +98,8 @@ const handler = async (req, res) => {
 				// } else {
 				// 	campus = response.data.profile.campus;
 				// }
+				console.log(JSON.stringify(response.data.profile));
+				console.log(response.data.profile.campus);
 				campus = response.data.profile.campus;
 				year = response.data.profile.prn.toString().toUpperCase().slice(4, 8);
 				const newBatchDetails = new batch({
