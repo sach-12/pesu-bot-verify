@@ -86,18 +86,19 @@ const handler = async (req, res) => {
 						message: "Branch not found. You're gonna have to wait for a while.",
 					});
 				}
-				if (
-					response.data.know_your_class_and_section?.department &&
-					response.data.know_your_class_and_section?.department.includes("Campus")
-				) {
-					campus = response.data.know_your_class_and_section?.department.includes(
-						"Electronic"
-					)
-						? "EC"
-						: "RR";
-				} else {
-					campus = response.data.profile.campus;
-				}
+				// if (
+				// 	response.data.know_your_class_and_section?.department &&
+				// 	response.data.know_your_class_and_section?.department.includes("Campus")
+				// ) {
+				// 	campus = response.data.know_your_class_and_section?.department.includes(
+				// 		"Electronic"
+				// 	)
+				// 		? "EC"
+				// 		: "RR";
+				// } else {
+				// 	campus = response.data.profile.campus;
+				// }
+				campus = response.data.profile.campus;
 				year = response.data.profile.prn.toString().toUpperCase().slice(4, 8);
 				const newBatchDetails = new batch({
 					PRN: response.data.profile.prn,
