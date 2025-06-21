@@ -50,7 +50,7 @@ const handler = async (req, res) => {
 		username,
 		password,
 		profile: true,
-		know_your_class_and_section: true,
+		// know_your_class_and_section: true,
 	};
 	const headers = {
 		"Content-Type": "application/json",
@@ -98,7 +98,7 @@ const handler = async (req, res) => {
 				// } else {
 				// 	campus = response.data.profile.campus;
 				// }
-				console.log(JSON.stringify(response.data.profile));
+				console.log(JSON.stringify(response.data));
 				console.log(response.data.profile.campus);
 				campus = response.data.profile.campus;
 				year = response.data.profile.prn.toString().toUpperCase().slice(4, 8);
