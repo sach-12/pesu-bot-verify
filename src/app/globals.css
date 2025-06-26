@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+:root {
+  --pesu-c0: #0F0E10;
+  --pesu-c1: #19181B;
+  --pesu-c2: #808183;
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-pesu-c0: var(--pesu-c0);
+  --color-pesu-c1: var(--pesu-c1);
+  --color-pesu-c2: var(--pesu-c2);
+}
+
+/* TODO: Theme support */
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+} */
+
+body {
+  background: var(--pesu-c1);
+  color: var(--color-white);
+  font-family: Manrope, sans-serif;
+}
