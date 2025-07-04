@@ -59,10 +59,10 @@ export default function Home() {
               )}
               {!store.user?.guild_info.is_verified && (
                 <button
-                  onClick={() => router.push("/verify")}
+                  onClick={() => router.push("/link")}
                   className='bg-pesu-c1 text-white rounded-lg px-4 py-2 m-2 transition-colors hover:bg-white hover:text-pesu-c0'
                 >
-                  Verify yourself
+                  Link your Discord Account
                 </button>
               )}
             </div>

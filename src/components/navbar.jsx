@@ -15,10 +15,7 @@ const Navbar = () => {
   const outerRef = useRef();
 
   useEffect(() => {
-    if (
-      !store._hasHydrated ||
-      router === undefined
-    ) {
+    if (!store._hasHydrated || router === undefined) {
       return;
     }
     setLoading(false);
@@ -122,12 +119,12 @@ const Navbar = () => {
             {!store.user?.guild_info.is_verified && (
               <button
                 onClick={() => {
-                  router.push("/verify");
+                  router.push("/link");
                   setOpen(false);
                 }}
                 className='inline-flex items-center justify-center whitespace-nowrap rounded-md text-xl text-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border border-pesu-c2 bg-pesu-c1 shadow-sm hover:bg-white hover:text-pesu-c0 h-12'
               >
-                Verify
+                Link
               </button>
             )}
             <button
@@ -254,11 +251,11 @@ const Navbar = () => {
                   <div>
                     <button
                       onClick={() => {
-                        router.push("/verify");
+                        router.push("/link");
                       }}
                       className='w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm text-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white border border-pesu-c2 bg-pesu-c1 shadow-sm hover:bg-white hover:text-pesu-c0 h-9 px-4 py-2'
                     >
-                      Verify
+                      Link
                     </button>
                   </div>
                 )}
