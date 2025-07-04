@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import { SignJWT } from "jose";
 import axios from "axios";
 import { createResponse } from "@/utils/helpers";
 import { cookies } from "next/headers";
@@ -43,23 +43,26 @@ export async function GET(request) {
       );
     }
     const token = apiResponse.data;
-    const jwtToken = jwt.sign(token, process.env.JWT_SESSION_SECRET);
+    const iat = Math.floor(Date.now() / 1000);
+    const expiresAt = new Date(iat * 1000 + token.expires_in * 1000);
+    const jwtToken = await new SignJWT(token)
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt(iat)
+      .setNotBefore(iat)
+      .setExpirationTime(expiresAt)
+      .sign(new TextEncoder().encode(process.env.JWT_SESSION_SECRET));
 
     // Set the JWT token in a cookie
     const response = createResponse(200, "Token retrieved successfully");
-    const cookiesStore = await cookies();
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
-    cookiesStore.set("pd-session-jwt", jwtToken, {
+    const cookiesStore = cookies();
+    // Set the cookie with appropriate options
+    cookiesStore.set("pd_cookie", jwtToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+      secure: process.env.NODE_ENV === "prod", // Use secure cookies in production
       sameSite: "lax", // Adjust as necessary
       expires: expiresAt,
       path: "/",
     });
-    // response.headers.set(
-    //   "Set-Cookie",
-    //   `pd-session-jwt=${jwtToken}; HttpOnly; Path=/; Max-Age=604800; SameSite=Lax`
-    // );
     return response;
   } catch (error) {
     return createResponse(

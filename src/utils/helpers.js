@@ -21,7 +21,6 @@ export const fetchDiscordUser = async (accessToken) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching Discord user:", error);
     return null;
   }
 };

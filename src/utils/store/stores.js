@@ -1,42 +1,40 @@
 import { createStore } from "zustand";
 import { persist } from "zustand/middleware";
 
-export const initSessionStore = () => {
-  return { user: null, token: null };
-};
-
-export const defaultInitSessionState = {
+const defaultInitState = {
   user: null,
-  token: null,
+  authSessionState: null,
 };
 
-export const createSessionStore = (initState = defaultInitSessionState) => {
-  return createStore()((set) => ({
-    ...initState,
-    setUser: (user) => set({ user }),
-    setToken: (token) => set({ token }),
-    deleteSession: () => set({ user: null, token: null }),
-  }));
-};
-
-export const initLocalStore = () => {
-  return { session: null };
-};
-
-export const defaultInitLocalState = {
-  session: null,
-};
-
-export const createLocalStore = (initState = defaultInitLocalState) => {
+export const createPersistentStore = (initState = defaultInitState) => {
   return createStore(
     persist(
       (set) => ({
         ...initState,
-        setSession: (session) => set({ session }),
-        deleteSession: () => set({ session: null }),
+        setAuthSessionState: (authSessionState) => set({ authSessionState }),
+        deleteAuthSessionState: () => set({ authSessionState: null }),
+        setUser: (user) => set({ user }),
+        deleteUser: () => set({ user: null }),
+        _hasHydrated: false,
+        setHasHydrated: (state) => set({ _hasHydrated: state }),
       }),
       {
-        name: "local_store_session",
+        name: "pd_store",
+        getStorage: () => {
+          // Check if we're in the browser environment
+          if (typeof window !== "undefined") {
+            return localStorage;
+          }
+          // Return a no-op storage for SSR
+          return {
+            getItem: () => null,
+            setItem: () => {},
+            removeItem: () => {},
+          };
+        },
+        onRehydrateStorage: () => (state) => {
+          state?.setHasHydrated(true);
+        },
       }
     )
   );

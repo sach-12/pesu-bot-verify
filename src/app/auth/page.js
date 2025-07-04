@@ -1,13 +1,14 @@
+"use client";
+
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import { useLocalStore, useSessionStore } from "@/utils/store/provider";
+import { usePersistentStore } from "@/utils/store/provider";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import ReactLoading from "react-loading";
 
 const Auth = () => {
-  const store = useSessionStore();
-  const persistentStore = useLocalStore();
+  const store = usePersistentStore();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -16,6 +17,13 @@ const Auth = () => {
   const [errorText, setErrorText] = useState(null);
 
   useEffect(() => {
+    if (
+      !store._hasHydrated ||
+      router === undefined ||
+      searchParams === undefined
+    ) {
+      return;
+    }
     if (store.user) {
       router.push("/");
       return;
@@ -38,14 +46,14 @@ const Auth = () => {
       setLoading(false);
       return;
     }
-    const session = persistentStore.session;
-    if (!session) {
+    const authSessionState = store.authSessionState;
+    if (!authSessionState) {
       setText("Invalid request");
       setErrorText("Invalid session");
       setLoading(false);
       return;
     }
-    const decodedSession = Buffer.from(session, "base64").toString("ascii");
+    const decodedSession = Buffer.from(authSessionState, "base64").toString("ascii");
     const parsedSession = JSON.parse(decodedSession);
     // check if session id matches
     if (parsedSession.sessionId !== state) {
@@ -57,21 +65,16 @@ const Auth = () => {
       const tokenUrl = `/api/token?code=${code}`;
       axios
         .get(tokenUrl)
-        .then((res) => {
+        .then(() => {
           setText("Almost there");
-          const token = res.data.data;
-          store.setToken(token);
           const userUrl = "/api/user";
-          const headers = {
-            Authorization: `Bearer ${token.access_token}`,
-          };
           axios
-            .get(userUrl, { headers })
+            .get(userUrl)
             .then((res) => {
               setText("Redirecting you");
               const user = res.data.data;
               store.setUser(user);
-              persistentStore.deleteSession();
+              store.deleteAuthSessionState();
               router.push(parsedSession.returnTo);
             })
             .catch((err) => {
@@ -83,14 +86,13 @@ const Auth = () => {
             });
         })
         .catch((err) => {
-          const errorResponseCode = err.response.status;
-          const errorText = err.response.data.message;
+          const errorText = err.response?.data?.error || "An error occurred";
           setText("Oops, looks like an error occurred");
-          setErrorText(errorResponseCode + " | " + errorText);
+          setErrorText(errorText);
           setLoading(false);
         });
     }
-  }, []);
+  }, [store._hasHydrated, router, searchParams]);
 
   return (
     <div>
@@ -107,7 +109,7 @@ const Auth = () => {
             width={100}
           />
         )}
-        <h1 className='text-4xl text-c2'>{text}</h1>
+        <h1 className='text-4xl text-pesu-c2'>{text}</h1>
         {errorText && (
           <div className='text-2xl m-4'>
             <span className='text-red-500'>{errorText}</span>

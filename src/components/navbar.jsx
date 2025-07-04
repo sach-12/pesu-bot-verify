@@ -2,21 +2,27 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useSessionStore } from "@/utils/store/provider";
+import { usePersistentStore } from "@/utils/store/provider";
 import menu from "@/assets/menu.svg";
 import axios from "axios";
 
 const Navbar = () => {
   const router = useRouter();
-  const store = useSessionStore();
+  const store = usePersistentStore();
+
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const outerRef = useRef();
 
   useEffect(() => {
-    if (store.user === undefined) return;
+    if (
+      !store._hasHydrated ||
+      router === undefined
+    ) {
+      return;
+    }
     setLoading(false);
-  }, [store]);
+  }, [store._hasHydrated, router]);
 
   const handleClickOutsideOuterRef = (e) => {
     if (outerRef.current && !outerRef.current.contains(e.target)) {
@@ -31,16 +37,11 @@ const Navbar = () => {
 
   const logout = async () => {
     const url = "/api/logout";
-    const headers = {
-      Authorization: `Bearer ${store.token.access_token}`,
-    };
     try {
-      await axios.get(url, { headers });
+      await axios.get(url);
       router.push("/");
-      deleteSession();
-    } catch (err) {
-      console.log(err);
-    }
+      store.deleteUser();
+    } catch (error) {}
   };
 
   const SideNav = ({ ref }) => {

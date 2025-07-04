@@ -1,13 +1,13 @@
-import axios from "axios";
-import jwt from "jsonwebtoken";
+// import jwt from "jsonwebtoken";
+import { jwtVerify } from "jose";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createResponse } from "@/utils/helpers";
 
 // Authentication middleware function
 export async function isAuthenticated(request) {
-  const cookiesStore = await cookies();
-  const sessionToken = cookiesStore.get("pd-session-jwt")?.value;
+  const cookiesStore = cookies();
+  const sessionToken = cookiesStore.get("pd_cookie")?.value;
 
   if (!sessionToken) {
     return createResponse(
@@ -20,16 +20,21 @@ export async function isAuthenticated(request) {
 
   try {
     // Verify the JWT token
-    const decoded_jwt = jwt.verify(
+    const decoded_jwt = await jwtVerify(
       sessionToken,
-      process.env.JWT_SESSION_SECRET
+      new TextEncoder().encode(process.env.JWT_SESSION_SECRET)
     );
-    request.auth = JSON.parse(JSON.stringify(decoded_jwt));
+    return NextResponse.next({
+      request: {
+        headers: new Headers({
+          ...request.headers,
+          "auth-token": decoded_jwt.payload.access_token,
+        }),
+      },
+    });
   } catch (error) {
     return createResponse(401, "Unauthorized", null, "Invalid session token");
   }
-
-  return NextResponse.next();
 }
 
 const allowedOrigins = [
@@ -72,7 +77,7 @@ export function corsMiddleware(request) {
 
 // Main middleware function that combines both
 export async function middleware(request) {
-  const authRoutes = ["/api/user"];
+  const authRoutes = ["/api/user", "/api/logout", "/api/link"];
   const pathname = request.nextUrl.pathname;
 
   // Apply CORS to all routes
