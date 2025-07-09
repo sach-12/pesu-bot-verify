@@ -17,12 +17,16 @@ export async function GET(request) {
   }
 
   try {
+    const redirect_uri =
+      process.env.APP_ENV === "prod"
+        ? "https://pesudiscord.vercel.app/auth"
+        : "http://localhost:3000/auth";
     const apiResponse = await axios.post(
       "https://discord.com/api/oauth2/token",
       new URLSearchParams({
         grant_type: "authorization_code",
         code: code,
-        redirect_uri: process.env.REDIRECT_URI,
+        redirect_uri: redirect_uri,
       }),
       {
         headers: {
@@ -58,7 +62,7 @@ export async function GET(request) {
     // Set the cookie with appropriate options
     cookiesStore.set("pd_cookie", jwtToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "prod", // Use secure cookies in production
+      secure: process.env.APP_ENV === "prod", // Use secure cookies in production
       sameSite: "lax", // Adjust as necessary
       expires: expiresAt,
       path: "/",

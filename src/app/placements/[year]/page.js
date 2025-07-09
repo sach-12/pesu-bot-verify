@@ -4,11 +4,11 @@ import Head from "next/head";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ReactLoading from "react-loading";
-import { constants } from "@/utils/config";
+import { CONSTANTS } from "@/utils/config";
 
 const Placement = ({ params }) => {
   const router = useRouter();
-  const data = constants.PLACEMENTS;
+  const data = CONSTANTS.PLACEMENTS;
 
   useEffect(() => {
     if (router === undefined) return;
@@ -26,9 +26,9 @@ const Placement = ({ params }) => {
         <title>Placements | PESU Discord</title>
       </Head>
 
-      <div className='flex flex-col items-center h-[85vh] my-auto justify-center'>
-        <ReactLoading type='bubbles' color='#808183' height={100} width={100} />
-        <h1 className='text-4xl text-pesu-c2'>Loading</h1>
+      <div className="flex flex-col items-center h-[85vh] my-auto justify-center">
+        <ReactLoading type="bubbles" color="#808183" height={100} width={100} />
+        <h1 className="text-4xl text-pesu-c2">Loading</h1>
       </div>
     </div>
   );

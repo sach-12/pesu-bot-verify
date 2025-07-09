@@ -40,7 +40,7 @@ const Login = () => {
     store.setAuthSessionState(base64Session);
 
     const redirectUri = encodeURIComponent(
-      process.env.NODE_ENV === "production"
+      process.env.APP_ENV === "prod"
         ? "https://pesudiscord.vercel.app/auth"
         : "http://localhost:3000/auth"
     );
@@ -55,9 +55,9 @@ const Login = () => {
         <title>Login - PESU Discord</title>
       </Head>
 
-      <div className='flex flex-col items-center h-[85vh] my-auto justify-center'>
-        <ReactLoading type='bubbles' color='#808183' height={100} width={100} />
-        <h1 className='text-4xl text-pesu-c2'>Redirecting</h1>
+      <div className="flex flex-col items-center h-[85vh] my-auto justify-center">
+        <ReactLoading type="bubbles" color="#808183" height={100} width={100} />
+        <h1 className="text-4xl text-pesu-c2">Redirecting</h1>
       </div>
     </div>
   );

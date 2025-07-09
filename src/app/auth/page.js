@@ -53,7 +53,9 @@ const Auth = () => {
       setLoading(false);
       return;
     }
-    const decodedSession = Buffer.from(authSessionState, "base64").toString("ascii");
+    const decodedSession = Buffer.from(authSessionState, "base64").toString(
+      "ascii"
+    );
     const parsedSession = JSON.parse(decodedSession);
     // check if session id matches
     if (parsedSession.sessionId !== state) {
@@ -65,12 +67,24 @@ const Auth = () => {
       const tokenUrl = `/api/token?code=${code}`;
       axios
         .get(tokenUrl)
-        .then(() => {
+        .then((res) => {
+          if (res.data.statusCode !== 200) {
+            setText("Oops, looks like an error occurred");
+            setErrorText(res.data.message + " | " + res.data.error);
+            setLoading(false);
+            return;
+          }
           setText("Almost there");
           const userUrl = "/api/user";
           axios
             .get(userUrl)
             .then((res) => {
+              if (res.data.statusCode !== 200) {
+                setText("Oops, looks like an error occurred");
+                setErrorText(res.data.message + " | " + res.data.error);
+                setLoading(false);
+                return;
+              }
               setText("Redirecting you");
               const user = res.data.data;
               store.setUser(user);
@@ -78,10 +92,10 @@ const Auth = () => {
               router.push(parsedSession.returnTo);
             })
             .catch((err) => {
-              const errorResponseCode = err.response.status;
-              const errorText = err.response.data.message;
+              const errorText =
+                err.response?.data?.error || "An error occurred";
               setText("Oops, looks like an error occurred");
-              setErrorText(errorResponseCode + " | " + errorText);
+              setErrorText(errorText);
               setLoading(false);
             });
         })
@@ -100,19 +114,19 @@ const Auth = () => {
         <title>Auth | PESU Discord</title>
       </Head>
 
-      <div className='flex flex-col items-center text-center h-[85vh] my-auto justify-center'>
+      <div className="flex flex-col items-center text-center h-[85vh] my-auto justify-center">
         {loading && (
           <ReactLoading
-            type='bubbles'
-            color='#808183'
+            type="bubbles"
+            color="#808183"
             height={100}
             width={100}
           />
         )}
-        <h1 className='text-4xl text-pesu-c2'>{text}</h1>
+        <h1 className="text-4xl text-pesu-c2">{text}</h1>
         {errorText && (
-          <div className='text-2xl m-4'>
-            <span className='text-red-500'>{errorText}</span>
+          <div className="text-2xl m-4">
+            <span className="text-red-500">{errorText}</span>
           </div>
         )}
       </div>
