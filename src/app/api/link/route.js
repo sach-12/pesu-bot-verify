@@ -280,7 +280,13 @@ export async function POST(request) {
             { name: "Branch", value: branchShortCode, inline: true },
             { name: "Campus", value: pesuUserProfile.campus, inline: true },
             { name: "Year", value: year, inline: true },
-            { name: "Error", value: error, inline: false },
+            {
+              name: "Error",
+              value: `${error.message || "Unknown error"} | ${
+                error.response?.data?.message || "No additional info"
+              }`,
+              inline: false,
+            },
           ],
         },
       });
@@ -390,7 +396,9 @@ export async function POST(request) {
         fields: [
           {
             name: "Error",
-            value: error.message || "Unknown error",
+            value: `${error.message || "Unknown error"} | ${
+              error.response?.data?.message || "No additional info"
+            }`,
             inline: false,
           },
         ],
