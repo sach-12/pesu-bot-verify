@@ -49,12 +49,11 @@ const Link = () => {
       const headers = {
         "Content-Type": "application/json",
       };
-      const data = {
-        username,
-        password,
-      };
       try {
-        const res = await axios.post(url, JSON.stringify(data), { headers });
+        const res = await axios.get(
+          `${url}?username=${username}&password=${password}`,
+          { headers }
+        );
         if (res.data.statusCode !== 200) {
           setError(res.data.message + " | " + res.data.error);
           setLoading(false);

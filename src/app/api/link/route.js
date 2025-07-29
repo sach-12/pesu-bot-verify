@@ -3,7 +3,7 @@ import { createResponse, fetchDiscordUser } from "@/utils/helpers";
 import { CONSTANTS } from "@/utils/config";
 import { getDmMessage, sendErrorLogsToDiscord } from "@/utils/helpers";
 
-export async function POST(request) {
+export async function GET(request) {
   const access_token = request.headers.get("auth-token");
   const discordUser = await fetchDiscordUser(access_token);
 
@@ -26,12 +26,10 @@ export async function POST(request) {
     );
   }
 
-  // debug log
-  const x = await request.text();
-  console.log("Received request body:", x);
-
   // Check request fields
-  const { username, password } = await request.json();
+  const {searchParams} = new URL(request.url);
+  const username = searchParams.get("username");
+  const password = searchParams.get("password");
   if (!username || !password) {
     return createResponse(
       400,
