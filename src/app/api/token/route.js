@@ -18,7 +18,7 @@ export async function GET(request) {
 
   try {
     const redirect_uri =
-      process.env.APP_ENV === "prod"
+      process.env.NEXT_PUBLIC_APP_ENV === "prod"
         ? "https://pesudiscord.vercel.app/auth"
         : "http://localhost:3000/auth";
     const apiResponse = await axios.post(
@@ -62,7 +62,7 @@ export async function GET(request) {
     // Set the cookie with appropriate options
     cookiesStore.set("pd_cookie", jwtToken, {
       httpOnly: true,
-      secure: process.env.APP_ENV === "prod", // Use secure cookies in production
+      secure: process.env.NEXT_PUBLIC_APP_ENV === "prod", // Use secure cookies in production
       sameSite: "lax", // Adjust as necessary
       expires: expiresAt,
       path: "/",

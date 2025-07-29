@@ -40,7 +40,7 @@ const Login = () => {
     store.setAuthSessionState(base64Session);
 
     const redirectUri = encodeURIComponent(
-      process.env.APP_ENV === "prod"
+      process.env.NEXT_PUBLIC_APP_ENV === "prod"
         ? "https://pesudiscord.vercel.app/auth"
         : "http://localhost:3000/auth"
     );
