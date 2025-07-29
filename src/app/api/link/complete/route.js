@@ -6,16 +6,11 @@ import crypt from "crypto";
 
 export async function GET(request) {
   // Get the encoded token from URL parameters
-  const {searchParams} = new URL(request.url);
+  const { searchParams } = new URL(request.url);
   const token = searchParams.get("token");
-  
+
   if (!token) {
-    return createResponse(
-      400,
-      "Bad Request",
-      null,
-      "Token is required"
-    );
+    return createResponse(400, "Bad Request", null, "Token is required");
   }
 
   let tokenData;
@@ -32,9 +27,9 @@ export async function GET(request) {
     }
 
     // Decode and decrypt the token
-    const encryptedToken = Buffer.from(token, 'base64').toString('utf-8');
-    const [ivHex, encrypted] = encryptedToken.split(':');
-    
+    const encryptedToken = Buffer.from(token, "base64").toString("utf-8");
+    const [ivHex, encrypted] = encryptedToken.split(":");
+
     if (!ivHex || !encrypted) {
       return createResponse(
         400,
@@ -43,20 +38,21 @@ export async function GET(request) {
         "The provided token is malformed"
       );
     }
-    
-    const algorithm = 'aes-256-cbc';
-    const key = crypt.scryptSync(secret, 'salt', 32);
-    const iv = Buffer.from(ivHex, 'hex');
+
+    const algorithm = "aes-256-cbc";
+    const key = crypt.scryptSync(secret, "salt", 32);
+    const iv = Buffer.from(ivHex, "hex");
     const decipher = crypt.createDecipheriv(algorithm, key, iv);
-    
-    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
-    decrypted += decipher.final('utf8');
-    
+
+    let decrypted = decipher.update(encrypted, "hex", "utf8");
+    decrypted += decipher.final("utf8");
+
     tokenData = JSON.parse(decrypted);
-    
+
     // Basic token validation (check if it's not too old, e.g., 10 minutes)
     const tokenAge = Date.now() - tokenData.timestamp;
-    if (tokenAge > 10 * 60 * 1000) { // 10 minutes
+    if (tokenAge > 10 * 60 * 1000) {
+      // 10 minutes
       return createResponse(
         400,
         "Token expired",
@@ -82,7 +78,7 @@ export async function GET(request) {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${process.env.BACKEND_API_TOKEN}`,
     };
-    
+
     try {
       const prnExistsRoute = `${apiUrl}/check-prn/${pesuUserProfile.prn}`;
       const prnExistsResponse = await axios.get(prnExistsRoute, {
@@ -136,8 +132,12 @@ export async function GET(request) {
     const year = pesuUserProfile.prn.slice(4, 8);
 
     // Get branch short code from CONSTANTS
+    // If not found, see if it exists in the BRANCH
     const branchShortCode =
-      CONSTANTS.BRANCH_SHORT_CODES[pesuUserProfile.branch];
+      CONSTANTS.BRANCH_SHORT_CODES[pesuUserProfile.branch] ||
+      Object.keys(CONSTANTS.GUILD.ROLES.BRANCH).find(
+        (key) => key === pesuUserProfile.branch
+      );
     if (!branchShortCode) {
       await sendErrorLogsToDiscord({
         content: `<@${discordUser.id}>`,
@@ -479,9 +479,8 @@ export async function GET(request) {
       pesuProfile: pesuUserProfile,
       branch: branchShortCode,
       campus: pesuUserProfile.campus,
-      year: year
+      year: year,
     });
-    
   } catch (error) {
     await sendErrorLogsToDiscord({
       embed: {

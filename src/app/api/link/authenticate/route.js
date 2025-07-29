@@ -27,7 +27,7 @@ export async function GET(request) {
   }
 
   // Check request fields
-  const {searchParams} = new URL(request.url);
+  const { searchParams } = new URL(request.url);
   const username = searchParams.get("username");
   const password = searchParams.get("password");
   if (!username || !password) {
@@ -57,7 +57,7 @@ export async function GET(request) {
         },
       }
     );
-    
+
     if (response.status !== 200 || !response.data?.status) {
       await sendErrorLogsToDiscord({
         embed: {
@@ -136,7 +136,7 @@ export async function GET(request) {
       pesuUserProfile,
       timestamp: Date.now(),
     };
-    
+
     // Encrypt the token data using JWT_SESSION_SECRET
     const secret = process.env.JWT_SESSION_SECRET;
     if (!secret) {
@@ -147,24 +147,23 @@ export async function GET(request) {
         "Server configuration error"
       );
     }
-    
-    const algorithm = 'aes-256-cbc';
-    const key = crypt.scryptSync(secret, 'salt', 32);
+
+    const algorithm = "aes-256-cbc";
+    const key = crypt.scryptSync(secret, "salt", 32);
     const iv = crypt.randomBytes(16);
     const cipher = crypt.createCipheriv(algorithm, key, iv);
 
-    let encrypted = cipher.update(JSON.stringify(tokenData), 'utf8', 'hex');
-    encrypted += cipher.final('hex');
-    
+    let encrypted = cipher.update(JSON.stringify(tokenData), "utf8", "hex");
+    encrypted += cipher.final("hex");
+
     // Combine IV and encrypted data for the token
-    const encryptedToken = iv.toString('hex') + ':' + encrypted;
-    const encodedToken = Buffer.from(encryptedToken).toString('base64');
-    
+    const encryptedToken = iv.toString("hex") + ":" + encrypted;
+    const encodedToken = Buffer.from(encryptedToken).toString("base64");
+
     return createResponse(200, "Authentication successful", {
       token: encodedToken,
-      pesuProfile: pesuUserProfile
+      pesuProfile: pesuUserProfile,
     });
-
   } catch (error) {
     await sendErrorLogsToDiscord({
       embed: {
