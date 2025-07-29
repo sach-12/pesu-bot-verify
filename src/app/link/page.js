@@ -46,12 +46,15 @@ const Link = () => {
       setLoading(true);
       setError(null);
       const url = "/api/link";
+      const headers = {
+        "Content-Type": "application/json",
+      };
       const data = {
         username,
         password,
       };
       try {
-        const res = await axios.post(url, JSON.stringify(data));
+        const res = await axios.post(url, JSON.stringify(data), { headers });
         if (res.data.statusCode !== 200) {
           setError(res.data.message + " | " + res.data.error);
           setLoading(false);
