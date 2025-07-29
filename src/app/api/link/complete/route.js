@@ -374,12 +374,12 @@ export async function GET(request) {
           ],
         },
       });
-    //   return createResponse(
-    //     500,
-    //     "Failed to update Discord roles",
-    //     null,
-    //     "An error occurred while updating the Discord roles"
-    //   );
+      return createResponse(
+        500,
+        "Failed to update Discord roles",
+        null,
+        "An error occurred while updating the Discord roles"
+      );
     }
 
     let promises = [];
