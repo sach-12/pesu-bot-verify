@@ -1,7 +1,7 @@
 "use client";
 
 import Head from "next/head";
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState } from "react";
 import { usePersistentStore } from "@/utils/store/provider";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
@@ -109,30 +109,28 @@ const Auth = () => {
   }, [store._hasHydrated, router, searchParams]);
 
   return (
-    <Suspense>
-      <div>
-        <Head>
-          <title>Auth | PESU Discord</title>
-        </Head>
+    <div>
+      <Head>
+        <title>Auth | PESU Discord</title>
+      </Head>
 
-        <div className="flex flex-col items-center text-center h-[85vh] my-auto justify-center">
-          {loading && (
-            <ReactLoading
-              type="bubbles"
-              color="#808183"
-              height={100}
-              width={100}
-            />
-          )}
-          <h1 className="text-4xl text-pesu-c2">{text}</h1>
-          {errorText && (
-            <div className="text-2xl m-4">
-              <span className="text-red-500">{errorText}</span>
-            </div>
-          )}
-        </div>
+      <div className="flex flex-col items-center text-center h-[85vh] my-auto justify-center">
+        {loading && (
+          <ReactLoading
+            type="bubbles"
+            color="#808183"
+            height={100}
+            width={100}
+          />
+        )}
+        <h1 className="text-4xl text-pesu-c2">{text}</h1>
+        {errorText && (
+          <div className="text-2xl m-4">
+            <span className="text-red-500">{errorText}</span>
+          </div>
+        )}
       </div>
-    </Suspense>
+    </div>
   );
 };
 

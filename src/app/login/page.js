@@ -1,7 +1,7 @@
 "use client";
 
 import Head from "next/head";
-import { useEffect, Suspense } from "react";
+import { useEffect } from "react";
 import { usePersistentStore } from "@/utils/store/provider";
 import { useRouter, useSearchParams } from "next/navigation";
 import ReactLoading from "react-loading";
@@ -50,23 +50,21 @@ const Login = () => {
   }, [store._hasHydrated, router, searchParams]);
 
   return (
-    <Suspense>
-      <div>
-        <Head>
-          <title>Login - PESU Discord</title>
-        </Head>
+    <div>
+      <Head>
+        <title>Login - PESU Discord</title>
+      </Head>
 
-        <div className="flex flex-col items-center h-[85vh] my-auto justify-center">
-          <ReactLoading
-            type="bubbles"
-            color="#808183"
-            height={100}
-            width={100}
-          />
-          <h1 className="text-4xl text-pesu-c2">Redirecting</h1>
-        </div>
+      <div className="flex flex-col items-center h-[85vh] my-auto justify-center">
+        <ReactLoading
+          type="bubbles"
+          color="#808183"
+          height={100}
+          width={100}
+        />
+        <h1 className="text-4xl text-pesu-c2">Redirecting</h1>
       </div>
-    </Suspense>
+    </div>
   );
 };
 
