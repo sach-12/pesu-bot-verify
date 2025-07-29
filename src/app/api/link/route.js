@@ -26,6 +26,10 @@ export async function POST(request) {
     );
   }
 
+  // debug log
+  const x = await request.text();
+  console.log("Received request body:", x);
+
   // Check request fields
   const { username, password } = await request.json();
   if (!username || !password) {
