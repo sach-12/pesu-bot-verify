@@ -94,7 +94,8 @@ export async function middleware(request) {
 export const config = {
   matcher: [
     "/api/user",
-    "/api/link",
+    "/api/link/authenticate",
+    "/api/link/complete",
     "/api/logout",
   ],
 };

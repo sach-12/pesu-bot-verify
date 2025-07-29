@@ -1,137 +1,88 @@
 import axios from "axios";
-import { createResponse, fetchDiscordUser } from "@/utils/helpers";
+import { createResponse } from "@/utils/helpers";
 import { CONSTANTS } from "@/utils/config";
 import { getDmMessage, sendErrorLogsToDiscord } from "@/utils/helpers";
+import crypt from "crypto";
 
 export async function GET(request) {
-  const access_token = request.headers.get("auth-token");
-  const discordUser = await fetchDiscordUser(access_token);
-
-  if (!discordUser) {
-    return createResponse(
-      500,
-      "Failed to retrieve user data from Discord",
-      null,
-      "An error occurred while fetching user data"
-    );
-  }
-
-  // Check if the user is already linked
-  if (discordUser.guild_info.has_linked) {
-    return createResponse(
-      400,
-      "User already linked",
-      null,
-      "This Discord user is already linked to a PESU Academy account"
-    );
-  }
-
-  // Check request fields
+  // Get the encoded token from URL parameters
   const {searchParams} = new URL(request.url);
-  const username = searchParams.get("username");
-  const password = searchParams.get("password");
-  if (!username || !password) {
+  const token = searchParams.get("token");
+  
+  if (!token) {
     return createResponse(
       400,
       "Bad Request",
       null,
-      "Username and password are required"
+      "Token is required"
     );
   }
 
-  // Run pesu-auth service to authenticate the user
+  let tokenData;
   try {
-    const payload = {
-      username,
-      password,
-      profile: true,
-      fields: ["prn", "branch", "campus", "campus_code"],
-    };
-
-    const response = await axios.post(
-      "https://pesu-auth.onrender.com/authenticate",
-      JSON.stringify(payload),
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    if (response.status !== 200 || !response.data?.status) {
-      await sendErrorLogsToDiscord({
-        embed: {
-          title: "PESU Auth Error",
-          color: 0xff0000,
-          timestamp: new Date(),
-          footer: {
-            text: "PESU Bot",
-          },
-          fields: [
-            { name: "Response Code", value: response.status, inline: false },
-            {
-              name: "Error",
-              value:
-                response.data?.message ||
-                response.data?.error ||
-                "Unknown error",
-              inline: false,
-            },
-          ],
-        },
-      });
+    // Get the secret for decryption
+    const secret = process.env.JWT_SESSION_SECRET;
+    if (!secret) {
       return createResponse(
         500,
-        "Failed to authenticate PESU user",
+        "Internal Server Error",
         null,
-        response.data?.message ||
-          "An error occurred while authenticating the PESU user"
+        "Server configuration error"
       );
     }
 
-    // Check if the PESU profile contains all the required fields
-    const pesuUserProfile = response.data.profile;
-    for (const field of payload.fields) {
-      if (!pesuUserProfile[field]) {
-        console.error(
-          `Missing field in PESU profile: ${field}`,
-          pesuUserProfile
-        );
-        await sendErrorLogsToDiscord({
-          content: `<@${discordUser.id}>`,
-          embed: {
-            title: "Missing PESU Profile Field",
-            color: 0xff0000,
-            timestamp: new Date(),
-            footer: {
-              text: "PESU Bot",
-            },
-            fields: [
-              {
-                name: "Missing Field",
-                value: field,
-              },
-              {
-                name: "User Profile",
-                value: JSON.stringify(pesuUserProfile),
-              },
-            ],
-          },
-        });
-        return createResponse(
-          500,
-          "Internal Server Error",
-          null,
-          "Missing fields from PESU Auth"
-        );
-      }
+    // Decode and decrypt the token
+    const encryptedToken = Buffer.from(token, 'base64').toString('utf-8');
+    const [ivHex, encrypted] = encryptedToken.split(':');
+    
+    if (!ivHex || !encrypted) {
+      return createResponse(
+        400,
+        "Invalid token format",
+        null,
+        "The provided token is malformed"
+      );
     }
+    
+    const algorithm = 'aes-256-cbc';
+    const key = crypt.scryptSync(secret, 'salt', 32);
+    const iv = Buffer.from(ivHex, 'hex');
+    const decipher = crypt.createDecipheriv(algorithm, key, iv);
+    
+    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    
+    tokenData = JSON.parse(decrypted);
+    
+    // Basic token validation (check if it's not too old, e.g., 10 minutes)
+    const tokenAge = Date.now() - tokenData.timestamp;
+    if (tokenAge > 10 * 60 * 1000) { // 10 minutes
+      return createResponse(
+        400,
+        "Token expired",
+        null,
+        "The authentication token has expired. Please authenticate again."
+      );
+    }
+  } catch (error) {
+    return createResponse(
+      400,
+      "Invalid token",
+      null,
+      "The provided token is invalid or could not be decrypted"
+    );
+  }
 
+  const { discordUser, pesuUserProfile } = tokenData;
+
+  try {
     // Connect to the backend-api
     const apiUrl = process.env.BACKEND_API_URL || "http://localhost:3001/api";
     const headers = {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${process.env.BACKEND_API_TOKEN}`,
     };
+    
     try {
       const prnExistsRoute = `${apiUrl}/check-prn/${pesuUserProfile.prn}`;
       const prnExistsResponse = await axios.get(prnExistsRoute, {
@@ -284,7 +235,6 @@ export async function GET(request) {
       const studentResponse = await axios.post(studentRoute, studentData, {
         headers,
       });
-      // Response Body: {"success":true,"data":{"branch":{"full":"Computer Science and Engineering","short":"CSE"},"campus":{"code":1,"short":"RR"},"_id":"686db4f18fdc9705284eec8b","prn":"PES1201900075","year":"2019","createdAt":"2025-07-09T00:16:49.115Z","updatedAt":"2025-07-09T00:18:54.342Z","__v":0},"message":"Student record created/updated successfully"}
       if (!studentResponse.data.success) {
         await sendErrorLogsToDiscord({
           content: `<@${discordUser.id}>`,
@@ -424,12 +374,12 @@ export async function GET(request) {
           ],
         },
       });
-      return createResponse(
-        500,
-        "Failed to update Discord roles",
-        null,
-        "An error occurred while updating the Discord roles"
-      );
+    //   return createResponse(
+    //     500,
+    //     "Failed to update Discord roles",
+    //     null,
+    //     "An error occurred while updating the Discord roles"
+    //   );
     }
 
     let promises = [];
@@ -524,7 +474,14 @@ export async function GET(request) {
       console.error("Error in promises:", error);
     }
 
-    return createResponse(200, "User linked successfully", discordUser);
+    return createResponse(200, "User linked successfully", {
+      discordUser,
+      pesuProfile: pesuUserProfile,
+      branch: branchShortCode,
+      campus: pesuUserProfile.campus,
+      year: year
+    });
+    
   } catch (error) {
     await sendErrorLogsToDiscord({
       embed: {

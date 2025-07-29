@@ -45,17 +45,39 @@ const Link = () => {
       e.stopPropagation();
       setLoading(true);
       setError(null);
-      const url = "/api/link";
-      const headers = {
-        "Content-Type": "application/json",
-      };
+
       try {
-        const res = await axios.get(
-          `${url}?username=${username}&password=${password}`,
-          { headers }
+        // Step 1: Authenticate with PESU credentials
+        const authUrl = "/api/link/authenticate";
+        const authHeaders = {
+          "Content-Type": "application/json",
+          "auth-token": store.user?.access_token,
+        };
+
+        const authRes = await axios.get(
+          `${authUrl}?username=${username}&password=${password}`,
+          { headers: authHeaders }
         );
-        if (res.data.statusCode !== 200) {
-          setError(res.data.message + " | " + res.data.error);
+
+        if (authRes.data.statusCode !== 200) {
+          setError(authRes.data.message + " | " + authRes.data.error);
+          setLoading(false);
+          return;
+        }
+
+        // Step 2: Complete the linking process with the token
+        const completeUrl = "/api/link/complete";
+        const completeHeaders = {
+          "Content-Type": "application/json",
+        };
+
+        const completeRes = await axios.get(
+          `${completeUrl}?token=${authRes.data.data.token}`,
+          { headers: completeHeaders }
+        );
+
+        if (completeRes.data.statusCode !== 200) {
+          setError(completeRes.data.message + " | " + completeRes.data.error);
           setLoading(false);
           return;
         }
@@ -66,6 +88,7 @@ const Link = () => {
         }, 3000);
       } catch (error) {
         setError(error.response?.data?.message || "An error occurred");
+        setLoading(false);
       }
       setLoading(false);
     };
