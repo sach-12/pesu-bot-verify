@@ -1,8 +1,3 @@
-import mongoose from "mongoose";
-import AnonBan from "@/utils/models/anonban.js";
-import Link from "@/utils/models/link.js";
-import Student from "@/utils/models/student.js";
-
 export const CONSTANTS = {
   GUILD: {
     ID: "742797665301168220",
@@ -92,31 +87,4 @@ export const CONSTANTS = {
     "Bachelor of Business Administration": "BBA",
     "BBA LLB": "BBA LLB",
   },
-};
-
-// Singleton mongoDB connection
-let cachedConnection = null;
-
-export const connectToDatabase = async () => {
-  if (cachedConnection) {
-    return cachedConnection;
-  }
-
-  try {
-    const connection = await mongoose.connect(process.env.MONGO_URI);
-    cachedConnection = connection;
-
-    console.log("Connected to MongoDB successfully");
-    return connection;
-  } catch (error) {
-    console.error("Error connecting to MongoDB:", error);
-    throw error;
-  }
-};
-
-// Export models for easy access
-export const models = {
-  AnonBan,
-  Link,
-  Student,
 };

@@ -1,4 +1,3 @@
-// import jwt from "jsonwebtoken";
 import { jwtVerify } from "jose";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";

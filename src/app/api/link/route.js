@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createResponse, fetchDiscordUser } from "@/utils/helpers";
-import { models, connectToDatabase, CONSTANTS } from "@/utils/config";
+import { CONSTANTS } from "@/utils/config";
 import { getDmMessage, sendErrorLogsToDiscord } from "@/utils/helpers";
 
 export async function POST(request) {
@@ -124,17 +124,58 @@ export async function POST(request) {
       }
     }
 
-    // Connect to MongoDB
-    await connectToDatabase();
-
-    // Check if the PRN is already linked
-    const isPrnLinked = await models.Link.prnExists(pesuUserProfile.prn);
-    if (isPrnLinked) {
+    // Connect to the backend-api
+    const apiUrl = process.env.BACKEND_API_URL || "http://localhost:3001/api";
+    const headers = {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${process.env.BACKEND_API_TOKEN}`,
+    };
+    try {
+      const prnExistsRoute = `${apiUrl}/check-prn/${pesuUserProfile.prn}`;
+      const prnExistsResponse = await axios.get(prnExistsRoute, {
+        headers,
+      });
+      if (
+        prnExistsResponse.data.success &&
+        prnExistsResponse.data.data.exists
+      ) {
+        return createResponse(
+          400,
+          "PRN already linked",
+          null,
+          "PRN already linked with a different user. If you think this is a mistake, contact us."
+        );
+      }
+    } catch (error) {
+      console.error("Error checking PRN:", error);
+      await sendErrorLogsToDiscord({
+        content: `<@${discordUser.id}>`,
+        embed: {
+          title: "Error Checking PRN",
+          color: 0xff0000,
+          timestamp: new Date(),
+          footer: {
+            text: "PESU Bot",
+          },
+          fields: [
+            {
+              name: "PRN",
+              value: pesuUserProfile.prn,
+            },
+            {
+              name: "Error",
+              value: `${error.message || "Unknown error"} | ${
+                error.response?.data?.message || "No additional info"
+              }`,
+            },
+          ],
+        },
+      });
       return createResponse(
-        400,
-        "PRN already linked",
+        500,
+        "Internal Server Error",
         null,
-        "PRN already linked with a different user. If you think this is a mistake, contact us."
+        "An error occurred while checking the PRN"
       );
     }
 
@@ -224,18 +265,109 @@ export async function POST(request) {
     }
 
     // Create (or update existing) student record
-    await models.Student.createOrUpdateStudentRecord({
-      prn: pesuUserProfile.prn,
-      branch: {
-        full: pesuUserProfile.branch,
-        short: branchShortCode,
-      },
-      year: year,
-      campus: {
-        code: pesuUserProfile.campus_code,
-        short: pesuUserProfile.campus,
-      },
-    });
+    try {
+      const studentRoute = `${apiUrl}/student`;
+      const studentData = {
+        prn: pesuUserProfile.prn,
+        branch: {
+          full: pesuUserProfile.branch,
+          short: branchShortCode,
+        },
+        year: year,
+        campus: {
+          code: pesuUserProfile.campus_code,
+          short: pesuUserProfile.campus,
+        },
+      };
+      const studentResponse = await axios.post(studentRoute, studentData, {
+        headers,
+      });
+      // Response Body: {"success":true,"data":{"branch":{"full":"Computer Science and Engineering","short":"CSE"},"campus":{"code":1,"short":"RR"},"_id":"686db4f18fdc9705284eec8b","prn":"PES1201900075","year":"2019","createdAt":"2025-07-09T00:16:49.115Z","updatedAt":"2025-07-09T00:18:54.342Z","__v":0},"message":"Student record created/updated successfully"}
+      if (!studentResponse.data.success) {
+        await sendErrorLogsToDiscord({
+          content: `<@${discordUser.id}>`,
+          embed: {
+            title: "Failed to create/update student record",
+            color: 0xff0000,
+            timestamp: new Date(),
+            footer: {
+              text: "PESU Bot",
+            },
+            fields: [
+              {
+                name: "Username",
+                value: discordUser.username,
+                inline: true,
+              },
+              {
+                name: "User ID",
+                value: discordUser.id,
+                inline: true,
+              },
+              { name: "PRN", value: pesuUserProfile.prn, inline: true },
+              { name: "Branch", value: branchShortCode, inline: true },
+              { name: "Campus", value: pesuUserProfile.campus, inline: true },
+              { name: "Year", value: year, inline: true },
+              {
+                name: "Error",
+                value:
+                  studentResponse.data.message ||
+                  "Unknown error creating/updating student record",
+                inline: false,
+              },
+            ],
+          },
+        });
+        return createResponse(
+          500,
+          "Failed to create/update student record",
+          null,
+          studentResponse.data.message ||
+            "An error occurred while creating/updating the student record"
+        );
+      }
+    } catch (error) {
+      await sendErrorLogsToDiscord({
+        content: `<@${discordUser.id}>`,
+        embed: {
+          title: "Failed to create/update student record",
+          color: 0xff0000,
+          timestamp: new Date(),
+          footer: {
+            text: "PESU Bot",
+          },
+          fields: [
+            {
+              name: "Username",
+              value: discordUser.username,
+              inline: true,
+            },
+            {
+              name: "User ID",
+              value: discordUser.id,
+              inline: true,
+            },
+            { name: "PRN", value: pesuUserProfile.prn, inline: true },
+            { name: "Branch", value: branchShortCode, inline: true },
+            { name: "Campus", value: pesuUserProfile.campus, inline: true },
+            { name: "Year", value: year, inline: true },
+            {
+              name: "Error",
+              value: `${error.message || "Unknown error"} | ${
+                error.response?.data?.message || "No additional info"
+              }`,
+              inline: false,
+            },
+          ],
+        },
+      });
+      return createResponse(
+        500,
+        "Failed to create/update student record",
+        null,
+        "An error occurred while creating/updating the student record"
+      );
+    }
 
     // Update the Discord user with the new roles
     try {
@@ -302,7 +434,14 @@ export async function POST(request) {
 
     // Add the user to linked collection
     promises.push(
-      models.Link.createLinkRecord(discordUser.id, pesuUserProfile.prn)
+      axios.post(
+        `${apiUrl}/link`,
+        {
+          userId: discordUser.id,
+          prn: pesuUserProfile.prn,
+        },
+        { headers }
+      )
     );
 
     // DM the user with the welcome message
