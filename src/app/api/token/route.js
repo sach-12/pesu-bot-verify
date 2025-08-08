@@ -17,10 +17,7 @@ export async function GET(request) {
   }
 
   try {
-    const redirect_uri =
-      process.env.NEXT_PUBLIC_APP_ENV === "prod"
-        ? "https://pesudiscord.vercel.app/auth"
-        : "http://localhost:3000/auth";
+    const redirect_uri = process.env.NEXT_PUBLIC_REDIRECT_URI;
     const apiResponse = await axios.post(
       "https://discord.com/api/oauth2/token",
       new URLSearchParams({
