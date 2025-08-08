@@ -39,11 +39,7 @@ const Login = () => {
     const base64Session = Buffer.from(session).toString("base64");
     store.setAuthSessionState(base64Session);
 
-    const redirectUri = encodeURIComponent(
-      process.env.NEXT_PUBLIC_APP_ENV === "prod"
-        ? "https://pesudiscord.vercel.app/auth"
-        : "http://localhost:3000/auth"
-    );
+    const redirectUri = encodeURIComponent(process.env.NEXT_PUBLIC_REDIRECT_URI);
 
     const url = `https://discord.com/api/oauth2/authorize?client_id=980529206276526100&redirect_uri=${redirectUri}&response_type=code&scope=identify&state=${sessionId}`;
     window.location.href = url;

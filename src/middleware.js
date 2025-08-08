@@ -37,7 +37,8 @@ export async function isAuthenticated(request) {
 }
 
 const allowedOrigins = [
-  "https://pesu-discord.vercel.app",
+  "https://pesudiscord.vercel.app",
+  "https://pesudiscord.netlify.app",
   "http://localhost:3000",
 ];
 
