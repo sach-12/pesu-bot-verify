@@ -60,7 +60,7 @@ jobs:
             echo "ℹ️ No new changes to deploy"
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
-            echo "has_changes=true" >> $GITHUB_OUTPUT 
+            echo "has_changes=true" >> $GITHUB_OUTPUT
             echo "📊 Found $CHANGES commits to merge"
             git log --oneline main..origin/dev
           fi

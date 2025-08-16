@@ -1,0 +1,9 @@
+# High level team ownership
+* @pesu-dev/auth-link-maintainers
+
+# Specific file ownership
+.github/ @sach-12
+LICENSE @sach-12
+README.md @sach-12
+src/utils/config.js @sach-12
+package.json @sach-12
