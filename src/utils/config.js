@@ -72,6 +72,7 @@ export const CONSTANTS = {
   PLACEMENTS: {
     2023: "https://docs.google.com/spreadsheets/d/1a-eaEBcTeOJESck3f8W_I3uJqRRiEc_7d5O1Xc3nIUg/edit#gid=1137367370",
     2024: "https://docs.google.com/spreadsheets/d/1YZ7HtUcvA9jqWZ04DuwTT66aTV7gU7DUlXyO2BewpII/edit#gid=1441576938",
+    2025: "https://docs.google.com/spreadsheets/d/1TfR17y3iPGzHFmCfWGwAXBpwCHvbxEK0wOP_Kx8FOG8/edit?usp=sharing",
   },
   BRANCH_SHORT_CODES: {
     "Computer Science and Engineering": "CSE",

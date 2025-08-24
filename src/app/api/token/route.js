@@ -30,7 +30,7 @@ export async function GET(request) {
           "Content-Type": "application/x-www-form-urlencoded",
         },
         auth: {
-          username: process.env.CLIENT_ID,
+          username: process.env.NEXT_PUBLIC_CLIENT_ID,
           password: process.env.CLIENT_SECRET,
         },
       }

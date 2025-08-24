@@ -51,11 +51,12 @@ export const fetchDiscordUser = async (accessToken) => {
           guildResponse.data.roles.includes(CONSTANTS.GUILD.ROLES.ADMIN),
       };
     } catch (guildError) {
-      return null;
+      console.log("User not in guild or guild check failed:", guildError.message);
     }
 
     return discordUser;
   } catch (error) {
+    console.error("Error fetching Discord user:", error);
     return null;
   }
 };

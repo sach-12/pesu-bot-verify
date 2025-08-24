@@ -9,7 +9,7 @@ This is a website that handles verification of the students joining PESU Discord
 
 The application is built with security and privacy in mind, ensuring safe and effective community management while maintaining user confidentiality.
 
-me
+
 ## Getting Started
 
 ### For Users

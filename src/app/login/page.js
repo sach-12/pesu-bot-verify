@@ -39,9 +39,13 @@ const Login = () => {
     const base64Session = Buffer.from(session).toString("base64");
     store.setAuthSessionState(base64Session);
 
-    const redirectUri = encodeURIComponent(process.env.NEXT_PUBLIC_REDIRECT_URI);
+    const redirectUri = encodeURIComponent(
+      process.env.NEXT_PUBLIC_REDIRECT_URI
+    );
 
-    const url = `https://discord.com/api/oauth2/authorize?client_id=980529206276526100&redirect_uri=${redirectUri}&response_type=code&scope=identify&state=${sessionId}`;
+    const clientId = process.env.NEXT_PUBLIC_CLIENT_ID;
+
+    const url = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=identify&state=${sessionId}`;
     window.location.href = url;
   }, [store._hasHydrated, router, searchParams]);
 
@@ -52,12 +56,7 @@ const Login = () => {
       </Head>
 
       <div className="flex flex-col items-center h-[85vh] my-auto justify-center">
-        <ReactLoading
-          type="bubbles"
-          color="#808183"
-          height={100}
-          width={100}
-        />
+        <ReactLoading type="bubbles" color="#808183" height={100} width={100} />
         <h1 className="text-4xl text-pesu-c2">Redirecting</h1>
       </div>
     </div>

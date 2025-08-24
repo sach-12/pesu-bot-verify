@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+  output = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGO_URI")
+}
+
+enum CampusShort {
+  RR
+  EC
+}
+
+model Link {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String
+  prn       String
+  linkedAt  DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, prn])
+  @@index([userId])
+  @@index([prn])
+  @@map("link")
+}
+
+model AnonBan {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String
+  reason    String
+  bannedAt  DateTime @default(now())
+  expiresAt DateTime?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, active])
+  @@map("anonban")
+}
+
+type Branch {
+  full  String
+  short String
+}
+
+type Campus {
+  code  Int
+  short CampusShort
+}
+
+model Student {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  prn        String   @unique
+  branch     Branch
+  year       String
+  campus     Campus
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("student")
+}
