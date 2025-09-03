@@ -75,28 +75,21 @@ export function corsMiddleware(request) {
   return response;
 }
 
-// Main middleware function that combines both
+// Main middleware function that handles redirect to new site
 export async function middleware(request) {
-  const authRoutes = ["/api/user", "/api/logout", "/api/link"];
-  const pathname = request.nextUrl.pathname;
-
-  // Apply CORS to all routes
-  const corsResponse = corsMiddleware(request);
-
-  // Check authentication only for protected routes
-  if (authRoutes.some((route) => pathname.startsWith(route))) {
-    return isAuthenticated(request);
-  }
-
-  return corsResponse;
+  // Redirect all traffic to the new site
+  return NextResponse.redirect("https://pesudiscord.netlify.app", 301);
 }
 
-// Define which routes this middleware will run on
+// Define which routes this middleware will run on (all routes)
 export const config = {
   matcher: [
-    "/api/user",
-    "/api/link/authenticate",
-    "/api/link/complete",
-    "/api/logout",
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };

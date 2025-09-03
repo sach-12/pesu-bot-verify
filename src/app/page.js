@@ -2,94 +2,59 @@
 
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { usePersistentStore } from "@/utils/store/provider";
-import ReactLoading from "react-loading";
-import discordIcon from "@/assets/discordIcon.svg";
 
 export default function Home() {
-  const router = useRouter();
-  const store = usePersistentStore();
-  const [loading, setLoading] = useState(true);
+  const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
-    if (!store._hasHydrated || router === undefined) {
-      return;
-    }
-    setLoading(false);
-  }, [store._hasHydrated, router]);
+    // Redirect immediately
+    window.location.href = "https://pesudiscord.netlify.app";
+
+    // Fallback countdown redirect
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          window.location.href = "https://pesudiscord.netlify.app";
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   return (
-    <div>
+    <div className='flex flex-col items-center justify-center h-screen bg-gradient-to-br from-blue-900 to-purple-900 text-white'>
       <Head>
-        <title>PESU Discord</title>
+        <title>PESU Discord - Redirecting</title>
+        <meta
+          httpEquiv='refresh'
+          content='0;url=https://pesudiscord.netlify.app'
+        />
       </Head>
-      {loading ? (
-        <div className="flex flex-col items-center h-[85vh] my-auto justify-center">
-          <ReactLoading
-            type="bubbles"
-            color="#808183"
-            height={100}
-            width={100}
-          />
-          <h1 className="text-4xl text-pesu-c2 ml-10">Loading</h1>
-        </div>
-      ) : store.user ? (
-        <div className="h-[85vh] flex flex-col justify-center items-center">
-          <div className="w-fit flex flex-col items-center justify-center bg-pesu-c0 gap-4 rounded-lg border border-white/15 p-8">
-            <h1 className="text-4xl font-medium text-white">
-              Hey there, {store.user?.global_name}!
-            </h1>
-            <div className="flex flex-row">
-              {!store.user?.guild_info.in_guild && (
-                <button
-                  onClick={() => router.push("https://discord.gg/eZ3uFs2")}
-                  className="bg-pesu-c1 text-white rounded-lg px-4 py-2 m-2 transition-colors hover:bg-white hover:text-pesu-c0"
-                >
-                  Join the PESU Discord Server
-                </button>
-              )}
-              {store.user?.guild_info.has_linked && (
-                <button
-                  onClick={() => router.push("/event")}
-                  className="bg-pesu-c1 text-white rounded-lg px-4 py-2 m-2 transition-colors hover:bg-white hover:text-pesu-c0"
-                >
-                  Post an Event
-                </button>
-              )}
-              {!store.user?.guild_info.has_linked && (
-                <button
-                  onClick={() => router.push("/link")}
-                  className="bg-pesu-c1 text-white rounded-lg px-4 py-2 m-2 transition-colors hover:bg-white hover:text-pesu-c0"
-                >
-                  Link your Discord Account
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-col items-center h-[85vh] my-auto justify-center mx-4">
-          <div className="w-fit flex flex-col items-center justify-center bg-pesu-c0 gap-4 rounded-lg border border-white/15 p-8">
-            <h1 className="text-4xl text-white text-center tracking-wider">
-              Welcome to PESU Discord
-            </h1>
-            <button
-              className="bg-pesu-c1 text-pesu-c2 rounded-lg px-4 py-2 m-2 transition-colors hover:bg-white hover:text-pesu-c0"
-              onClick={() => {
-                router.push("/login?returnTo=/");
-              }}
-            >
-              <img
-                src={discordIcon.src}
-                alt=""
-                className="h-6 w-6 inline-block"
-              />
-              <span className="ml-2">Login with Discord</span>
-            </button>
-          </div>
-        </div>
-      )}
+      <div className='text-center p-8 rounded-lg bg-black/20 backdrop-blur-sm border border-white/10'>
+        <h1 className='text-4xl font-bold mb-4'>🚀 Project Moved!</h1>
+        <p className='text-xl mb-6'>
+          This project has been deprecated and moved to a new location.
+        </p>
+        <p className='text-lg mb-4'>
+          You will be automatically redirected in{" "}
+          <span className='font-bold text-yellow-300'>{countdown}</span>{" "}
+          seconds...
+        </p>
+        <a
+          href='https://pesudiscord.netlify.app'
+          className='inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200'
+        >
+          Click here if you're not redirected automatically
+        </a>
+        <p className='text-sm mt-4 text-gray-300'>
+          New URL:{" "}
+          <span className='font-mono'>https://pesudiscord.netlify.app</span>
+        </p>
+      </div>
     </div>
   );
 }
