@@ -16,6 +16,8 @@ const Link = () => {
   useEffect(() => {
     if (!store._hasHydrated || router === undefined) return;
 
+    console.log(store.user);
+
     if (!store.user) {
       router.push("/login?returnTo=/link");
       return;
@@ -51,15 +53,24 @@ const Link = () => {
         const authUrl = "/api/link/authenticate";
         const authHeaders = {
           "Content-Type": "application/json",
-          "auth-token": store.user?.access_token,
         };
 
-        const authRes = await axios.get(
-          `${authUrl}?username=${username}&password=${password}`,
-          { headers: authHeaders }
-        );
+        const authResUrl = new URL(authUrl, window.location.origin);
+        authResUrl.searchParams.append("username", username);
+        authResUrl.searchParams.append("password", password);
+
+        const authRes = await axios.get(authResUrl.toString(), {
+          headers: authHeaders,
+        });
 
         if (authRes.data.statusCode !== 200) {
+          if (authRes.data.statusCode === 401) {
+            store.deleteUser();
+            const loginUrl = new URL("/login", window.location.origin);
+            loginUrl.searchParams.set("returnTo", "/link");
+            router.push(loginUrl.toString());
+            return;
+          }
           setError(authRes.data.message + " | " + authRes.data.error);
           setLoading(false);
           return;
@@ -71,12 +82,20 @@ const Link = () => {
           "Content-Type": "application/json",
         };
 
-        const completeRes = await axios.get(
-          `${completeUrl}?token=${authRes.data.data.token}`,
-          { headers: completeHeaders }
-        );
+        const completeResUrl = new URL(completeUrl, window.location.origin);
+        completeResUrl.searchParams.append("token", authRes.data.data.token);
+        const completeRes = await axios.get(completeResUrl.toString(), {
+          headers: completeHeaders,
+        });
 
         if (completeRes.data.statusCode !== 200) {
+          if (completeRes.data.statusCode === 401) {
+            store.deleteUser();
+            const loginUrl = new URL("/login", window.location.origin);
+            loginUrl.searchParams.set("returnTo", "/link");
+            router.push(loginUrl.toString());
+            return;
+          }
           setError(completeRes.data.message + " | " + completeRes.data.error);
           setLoading(false);
           return;
@@ -133,7 +152,7 @@ const Link = () => {
             className="p-2 rounded-md text-white bg-pesu-c0 border border-white/15 placeholder-pesu-c2/50 text-sm focus:outline-none"
             placeholder="Username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => setUsername(e.target.value.trim())}
             onKeyUp={(e) =>
               e.key === "Enter" && buttonEnabled && handleSubmit(e)
             }
@@ -150,7 +169,7 @@ const Link = () => {
             className="p-2 rounded-md text-white bg-pesu-c0 border border-white/15 placeholder-pesu-c2/50 text-sm focus:outline-none"
             placeholder="Password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value.trim())}
             onKeyUp={(e) =>
               e.key === "Enter" && buttonEnabled && handleSubmit(e)
             }
